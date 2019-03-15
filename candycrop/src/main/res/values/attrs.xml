@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CandyCropView">
+        <attr name="bg_color" format="color"/>
+        <attr name="overlay_alpha" format="integer"/>
+        <attr name="crop_size" format="float"/>
+        <attr name="crop_aspect_ratio_x" format="integer"/>
+        <attr name="crop_aspect_ratio_y" format="integer"/>
+        <attr name="result_width" format="integer"/>
+        <attr name="result_height" format="integer"/>
+        <attr name="source_uri" format="string"/>
+        <attr name="destination_uri" format="string"/>
+    </declare-styleable>
+</resources>

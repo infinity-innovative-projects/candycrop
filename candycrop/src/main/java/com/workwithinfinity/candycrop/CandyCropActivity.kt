@@ -76,6 +76,7 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
             true -> View.VISIBLE
             false -> View.GONE
         }
+        mTxtOk.setTextColor(mOptions.buttonTextColor)
         mTxtCancel.visibility = when(mOptions.showButtonNegative) {
             true -> View.VISIBLE
             false -> View.GONE
