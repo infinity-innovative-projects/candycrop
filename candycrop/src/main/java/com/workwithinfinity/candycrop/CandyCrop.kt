@@ -18,6 +18,10 @@ class CandyCrop {
         const val CANDYCROP_RESULT_EXTRA = "CANDYCROP_RESULT_EXTRA"
         const val CANDYCROP_ACTIVITY_REQUEST = 2104
 
+    }
+
+    object Builder {
+
         fun activity(uri : Uri) :ActivityBuilder = ActivityBuilder(uri)
 
         class ActivityBuilder(val sourceUri : Uri) {

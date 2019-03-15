@@ -139,11 +139,6 @@ class CandyCropView(context : Context,attrs : AttributeSet? = null) : View(conte
         updateCropRect()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        Log.d(TAG,"onMeasure: $widthMeasureSpec $heightMeasureSpec")
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    }
-
     fun setBitmap(bitmap : Bitmap) {
         mBitmap = bitmap
         mRenderPositionX=0
@@ -280,8 +275,19 @@ class CandyCropView(context : Context,attrs : AttributeSet? = null) : View(conte
         val bm = mBitmap ?: return
         val currentTask = mCandyCropWorkerTask?.get()
         currentTask?.cancel(true)
-        mCandyCropWorkerTask = WeakReference(CandyCropWorkerTask(bm,mUri,mResultUri,mCropRect,mScaleFactor,mRenderPositionX,mRenderPositionY,true,mResultWidth,mResultHeight,
-            WeakReference(this)))
+        mCandyCropWorkerTask = WeakReference(CandyCropWorkerTask(
+            source =bm,
+            sourceUri = mUri,
+            destUri = mResultUri,
+            cropRect = mCropRect,
+            scaleFactor = mScaleFactor,
+            positionX = mRenderPositionX,
+            positionY = mRenderPositionY,
+            useFilter = true,
+            resultWidth = mResultWidth,
+            resultHeight = mResultHeight,
+            backgroundColor = mBackgroundColor,
+            view = WeakReference(this)))
         mCandyCropWorkerTask?.get()?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
 

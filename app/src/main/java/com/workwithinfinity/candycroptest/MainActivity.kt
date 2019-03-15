@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropView.setOnLoadUriImageCompleteListener(this)
         cropView.setResultUri(Uri.fromFile(File(cacheDir,"cropped")))
         cropView.setResultSize(1024,1024)
-        cropView.setBackgroundColor(Color.BLACK)
+        cropView.setBackgroundColor(Color.WHITE)
 
         selectButton = findViewById(R.id.btn_select_src)
         selectButton.setOnClickListener {
@@ -70,15 +70,15 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
 
     private fun startCropActivityDemo() {
         val uri = mUri ?: return
-        CandyCrop.activity(uri)
+        CandyCrop.Builder.activity(uri)
             .setButtonVisibility(positive=true,negative=true)
             .setResultUri(Uri.fromFile(File(cacheDir,"cropped")))
             .setBackgroundColor(Color.BLACK)
-            .setResultSize(800,1000)
+            .setResultSize(1000,1000)
             .setOverlayAlpha(100)
             .setUseToolbar(true)
-            .setCropRatio(8,10)
-            .setCropWindowSize(0.5f)
+            .setCropRatio(10,5)
+            .setCropWindowSize(0.9f)
             .start(this)
     }
 
@@ -112,7 +112,6 @@ puts the uri of the selected image into bundle and navigates to the cropping ste
             } else {
                 Log.d(TAG,"Failed to crop picture")
             }
-
         }
     }
 }
