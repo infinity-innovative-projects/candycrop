@@ -3,6 +3,7 @@ package com.workwithinfinity.candycrop
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -73,11 +74,15 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
         }
 
         if(savedInstanceState == null) {
-            if(sourceUri== null || sourceUri ==(Uri.EMPTY)) {
-                //TODO: when calling the activity without source, start image chooser activity to select an image
-                //should not be possible with current builder
-            } else {
+            if(sourceUri!= null && sourceUri !=(Uri.EMPTY)) {
                 mSourceUri = sourceUri
+                mCropView.setImageUriAsync(mSourceUri)
+            }
+        } else {
+            val uri : Uri? = savedInstanceState.getParcelable("sourceUri")
+            if(uri!=null)
+            {
+                mSourceUri = uri
                 mCropView.setImageUriAsync(mSourceUri)
             }
         }
@@ -91,6 +96,11 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
         Log.d(TAG,"onCancel")
         setResult(RESULT_CANCELED)
         finish()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable("sourceUri",mSourceUri)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

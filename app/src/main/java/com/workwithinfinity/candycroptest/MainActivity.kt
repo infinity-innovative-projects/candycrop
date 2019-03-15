@@ -48,6 +48,18 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropButton.setOnClickListener {
             cropView.getCroppedBitmapAsync()
         }
+
+        if(savedInstanceState!=null) {
+            val uri : Uri? = savedInstanceState.getParcelable("sourceUri")
+            if(uri!=null) {
+                cropView.setImageUriAsync(uri)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable("sourceUri",mUri)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCropComplete(result: CandyCropView.CropResult) {
