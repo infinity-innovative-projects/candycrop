@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 
@@ -36,7 +38,12 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
         //apply options
         if(!mOptions.useToolbar) {
             supportActionBar?.hide()
+        } else {
+            supportActionBar?.show()
         }
+
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         with(mCropView) {
             setAspectRatio(mOptions.ratioX,mOptions.ratioY)
@@ -81,8 +88,29 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
     }
 
     private fun onCancel() {
+        Log.d(TAG,"onCancel")
         setResult(RESULT_CANCELED)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG,resources.getResourceName(item.itemId))
+        return when(item.itemId) {
+            R.id.candycrop_menu_crop -> {
+                onConfirm()
+                true
+            }
+            android.R.id.home -> {
+                onCancel()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.candycrop_menu,menu)
+        return true
     }
 
     override fun onCropComplete(result: CandyCropView.CropResult) {

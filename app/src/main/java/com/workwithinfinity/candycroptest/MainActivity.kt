@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .setBackgroundColor(Color.BLACK)
             .setResultSize(800,1000)
             .setOverlayAlpha(100)
-            .setUseToolbar(false)
+            .setUseToolbar(true)
             .setCropRatio(8,10)
             .setCropWindowSize(0.5f)
             .start(this)

@@ -27,9 +27,14 @@ class CandyCropWorkerTask(private val source : Bitmap,
         if(isCancelled) {
             return CandyCropView.CropResult(null,null,null,null)
         }
-       //TODO improve scaling image to avoid losing quality
-        val scaledBitmap = Bitmap.createScaledBitmap(source,(source.width*scaleFactor).roundToInt(),(source.height*scaleFactor).roundToInt(),useFilter)
-        val croppedBitmap = Bitmap.createBitmap(scaledBitmap,cropRect.left-positionX,cropRect.top-positionY,cropRect.width(),cropRect.height())
+
+        val cropPositionX = ((cropRect.left-positionX)/scaleFactor).roundToInt()
+        val cropPositionY = ((cropRect.top-positionY)/scaleFactor).roundToInt()
+        val cropWidth = (cropRect.width()/scaleFactor).roundToInt()
+        val cropHeight = (cropRect.height()/scaleFactor).roundToInt()
+
+
+        val croppedBitmap = Bitmap.createBitmap(source,cropPositionX,cropPositionY,cropWidth,cropHeight)
         val finalBitmap = if(resultWidth > 0 && resultHeight > 0) {
             Bitmap.createScaledBitmap(croppedBitmap, resultWidth, resultHeight, useFilter)
         } else {
