@@ -15,14 +15,23 @@ import java.io.File
 
 class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
 
-    private val CHOOSE_IMAGE = 1
+    /** choose image intent request code */
+    private val CHOOSE_IMAGE = 1598
+    /**  the CandyCropView */
     private lateinit var cropView : CandyCropView
+    /** the crop button */
     private lateinit var cropButton : Button
+    /** the select source button */
     private lateinit var selectButton : Button
+    /** the launch activity demo button */
     private lateinit var activitybutton : Button
+    /** the selected source uri */
     private var mUri : Uri? = null
-    private val TAG = "MainActivity"
 
+    /**
+     * OnCreate of the Activity
+     * @param savedInstanceState null if fresh, contains the source uri otherwise
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -57,29 +66,48 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         }
     }
 
+    /**
+     * Save the instance state
+     * @param outState bundle to save the state in
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable("sourceUri",mUri)
         super.onSaveInstanceState(outState)
     }
 
+    /**
+     * Implementation of the onCropCompleteListener interface
+     * @param result the result of the cropping process
+     */
     override fun onCropComplete(result: CandyCropView.CropResult) {
         Log.d("CandyCropTest","Cropping complete: OgUri: ${result.originalUri?.toString()} CroppedSize: ${result.croppedBitmap?.width}/${result.croppedBitmap?.height}")
         if(result.croppedUri!=null)
             cropView.setImageUriAsync(result.croppedUri!!)
     }
 
+    /**
+     * Implementation of the onLoadUriImageCompleteListener
+     * @param result the loaded image as bitmap
+     * @param uri the source uri
+     */
     override fun onLoadUriImageComplete(result: Bitmap,uri : Uri) {
         mUri = uri
         cropButton.isEnabled = true
         activitybutton.isEnabled = true
     }
 
+    /**
+     * Starts a choose image from gallery activity
+     */
     private fun startBrowseImageIntent() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
         startActivityForResult(Intent.createChooser(intent,"Select Picture"), CHOOSE_IMAGE)
     }
 
+    /**
+     * Starts a CandyCropActivity with the selected source
+     */
     private fun startCropActivityDemo() {
         val uri = mUri ?: return
         CandyCrop.Builder.activity(uri)
@@ -94,12 +122,14 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .start(this)
     }
 
-    /*
-puts the uri of the selected image into bundle and navigates to the cropping step
- */
+    /**
+     * Get results of launched activities
+     * @param requestCode the request code. CHOOSE_IMAGE and CANDYCROP_ACTIVITY_REQUEST are relevant
+     * @param resultCode the resultCode
+     * @param data the result data
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG,"OnActivityResult")
         if(requestCode==CHOOSE_IMAGE) {
             if(resultCode == Activity.RESULT_OK) {
                 if(data!=null) {
@@ -112,17 +142,14 @@ puts the uri of the selected image into bundle and navigates to the cropping ste
             }
         } else if(requestCode == CandyCrop.CANDYCROP_ACTIVITY_REQUEST) {
             if(resultCode == Activity.RESULT_OK) {
-                Log.d(TAG,"Got crop result")
                 if(data!=null) {
-                    Log.d(TAG,"Data not null")
                     val result = data.getParcelableExtra<CandyCrop.CandyCropActivityResult>(CandyCrop.CANDYCROP_RESULT_EXTRA)
                     if(result.resultUri!=null) {
-                        Log.d(TAG,"Result uri is: ${result.resultUri}")
                         cropView.setImageUriAsync(result.resultUri!!)
                     }
                 }
             } else {
-                Log.d(TAG,"Failed to crop picture")
+                Log.d(this.javaClass.name,"Failed to crop picture")
             }
         }
     }

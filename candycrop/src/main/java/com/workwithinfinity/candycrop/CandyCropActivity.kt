@@ -12,19 +12,34 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 
+/**
+ * Activity that can be launched to crop an image
+ * Use the CandyCrop.Builder to use this activity
+ */
 class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener {
 
+    /** The CandyCropView */
     private lateinit var mCropView : CandyCropView
+    /** the Toolbar */
     private lateinit var mToolbar : Toolbar
+    /** the options set by the builder */
     private lateinit var mOptions : CandyCropOptions
+    /** the uri of the source image */
     private lateinit var mSourceUri : Uri
+    /** the positive button */
     private lateinit var mTxtOk : TextView
+    /** the negative button */
     private lateinit var mTxtCancel : TextView
-    private val TAG = "CandyCropActivity"
 
+    /**
+     * onCreate of the activity
+     * @param savedInstanceState null if fresh activity, else the saved instance state
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.candy_crop_activity)
+        setContentView(R.layout.candy_crop_activity) //inflate the view
+
+        //save the different views
         mCropView = findViewById(R.id.cropping_view)
         mToolbar = findViewById(R.id.toolbar)
         mTxtOk = findViewById(R.id.txt_ok)
@@ -33,14 +48,15 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
 
         val bundle = intent.getBundleExtra(CandyCrop.CANDYCROP_BUNDLE)
 
+        //read options
         mOptions = bundle.getParcelable(CandyCrop.CANDYCROP_OPTIONS) ?: CandyCropOptions()
         val sourceUri : Uri? = bundle.getParcelable(CandyCrop.CANDYCROP_SOURCE)
 
         //apply options
-        if(!mOptions.useToolbar) {
-            supportActionBar?.hide()
-        } else {
+        if(mOptions.useToolbar) {
             supportActionBar?.show()
+        } else {
+            supportActionBar?.hide()
         }
 
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -88,23 +104,35 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
         }
     }
 
+    /**
+     * Called when positive button or crop button is pressed
+     */
     private fun onConfirm() {
         mCropView.getCroppedBitmapAsync()
     }
 
+    /**
+     * called when negative button or up button is pressed
+     */
     private fun onCancel() {
-        Log.d(TAG,"onCancel")
         setResult(RESULT_CANCELED)
         finish()
     }
 
+    /**
+     * Save the instance state
+     * @param outState bundle to save the state in
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable("sourceUri",mSourceUri)
         super.onSaveInstanceState(outState)
     }
 
+    /**
+     * Called when button on the toolbar clicked
+     * @param item the clicked item
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(TAG,resources.getResourceName(item.itemId))
         return when(item.itemId) {
             R.id.candycrop_menu_crop -> {
                 onConfirm()
@@ -118,20 +146,25 @@ class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListe
         }
     }
 
+    /**
+     * populates the toolbar
+     * @param menu the menu
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.candycrop_menu,menu)
         return true
     }
 
+    /**
+     * implementation of the OnCropCompleteListener
+     * @param result the result of the cropping process
+     */
     override fun onCropComplete(result: CandyCropView.CropResult) {
-        Log.d(TAG,"OnCropComplete")
         val intent = Intent()
-        //intent.putExtras(getIntent())
+        intent.putExtras(getIntent())
         val res = CandyCrop.CandyCropActivityResult(result.croppedUri)
         intent.putExtra(CandyCrop.CANDYCROP_RESULT_EXTRA,res)
         setResult(RESULT_OK,intent)
-
         finish()
-        Log.d(TAG,"finished?")
     }
 }
