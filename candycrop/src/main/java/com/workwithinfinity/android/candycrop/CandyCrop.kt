@@ -17,7 +17,7 @@ class CandyCrop {
         /** Const name for the options in the bundle */
         const val CANDYCROP_OPTIONS = "CANDYCROP_OPTIONS"
         /** const name for the source uri in the boundle */
-        const val CANDYCROP_SOURCE = "CANDYCROP_SOURCE"
+        const val CANDYCROP_SOURCE_URI = "CANDYCROP_SOURCE_URI"
         /** const name for the result in the bundle */
         const val CANDYCROP_RESULT_EXTRA = "CANDYCROP_RESULT_EXTRA"
         /** id for the activity request */
@@ -50,7 +50,7 @@ class CandyCrop {
                 intent.setClass(context, CandyCropActivity::class.java)
                 val bundle = Bundle().apply {
                     putParcelable(CANDYCROP_OPTIONS, mOptions)
-                    putParcelable(CANDYCROP_SOURCE, sourceUri)
+                    putParcelable(CANDYCROP_SOURCE_URI, sourceUri)
                 }
                 intent.putExtra(CANDYCROP_BUNDLE,bundle)
                 return intent

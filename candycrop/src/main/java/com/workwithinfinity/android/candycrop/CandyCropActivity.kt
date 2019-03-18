@@ -50,7 +50,8 @@ class CandyCropActivity : AppCompatActivity(),
 
         //read options
         mOptions = bundle.getParcelable(CandyCrop.CANDYCROP_OPTIONS) ?: CandyCropOptions()
-        val sourceUri : Uri? = bundle.getParcelable(CandyCrop.CANDYCROP_SOURCE)
+        val sourceUri : Uri? = bundle.getParcelable(CandyCrop.CANDYCROP_SOURCE_URI)
+
 
         //apply options
         if(mOptions.useToolbar) {
@@ -69,7 +70,7 @@ class CandyCropActivity : AppCompatActivity(),
             setOverlayAlpha(mOptions.overlayAlpha)
             setResultSize(mOptions.resultWidth,mOptions.resultHeight)
             setCropSize(mOptions.cropSize)
-            setBackgroundColor(mOptions.backgroundColor)
+            setBgColor(mOptions.backgroundColor)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {

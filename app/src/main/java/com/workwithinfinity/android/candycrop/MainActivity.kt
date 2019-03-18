@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
 
     /** choose image intent request code */
     private val CHOOSE_IMAGE = 1598
-    /**  the CandyCropView */
+    /**  the CandyCropWindowView */
     private lateinit var cropView : CandyCropView
     /** the crop button */
     private lateinit var cropButton : Button
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropView.setResultUri(Uri.fromFile(File(cacheDir,"cropped")))
         cropView.setResultSize(1024,1024)
         cropView.setBackgroundColor(Color.WHITE)
+
 
         selectButton = findViewById(R.id.btn_select_src)
         selectButton.setOnClickListener {
