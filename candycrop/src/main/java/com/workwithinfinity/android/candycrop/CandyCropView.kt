@@ -2,6 +2,7 @@ package com.workwithinfinity.android.candycrop
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.AsyncTask
 import android.support.annotation.ColorInt
@@ -41,9 +42,16 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
         mCropView = findViewById(R.id.candyCropWindowView)
         mProgressBar = findViewById(R.id.progressBar)
         mProgressBar.visibility = View.GONE
-        //val at = context.obtainStyledAttributes(attrs,R.styleable.CandyCropView)
-        //Log.d("CandyCropView",at.getFloat(R.styleable.CandyCropView_crop_size,0.9f).toString())
-        //at.recycle()
+        if(attrs!=null) {
+            val at = context.obtainStyledAttributes(attrs,R.styleable.CandyCropView)
+            mCropView.setBgColor(at.getColor(R.styleable.CandyCropView_bg_color, Color.TRANSPARENT))
+            mCropView.setCropSize(at.getFloat(R.styleable.CandyCropView_crop_size,0.9f))
+            val aX = at.getInteger(R.styleable.CandyCropView_crop_aspect_ratio_x,1)
+            val aY = at.getInteger(R.styleable.CandyCropView_crop_aspect_ratio_y,1)
+            mCropView.setAspectRatio(aX,aY)
+            mCropView.setOverlayAlpha(at.getInteger(R.styleable.CandyCropView_overlay_alpha,125))
+            at.recycle()
+        }
     }
 
     /**
