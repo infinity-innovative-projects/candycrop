@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.app.Activity
 import android.content.Context
@@ -31,7 +31,8 @@ class CandyCrop {
          * Generates an ActivityBuilder
          * @param uri Uri of the source image
          */
-        fun activity(uri : Uri) :ActivityBuilder = ActivityBuilder(uri)
+        fun activity(uri : Uri) : ActivityBuilder =
+            ActivityBuilder(uri)
 
         /** Builder for the activity
          * @param sourceUri Uri of the source image
@@ -46,7 +47,7 @@ class CandyCrop {
              */
             private fun getIntent(context : Context) : Intent {
                 val intent = Intent()
-                intent.setClass(context,CandyCropActivity::class.java)
+                intent.setClass(context, CandyCropActivity::class.java)
                 val bundle = Bundle().apply {
                     putParcelable(CANDYCROP_OPTIONS, mOptions)
                     putParcelable(CANDYCROP_SOURCE, sourceUri)
@@ -60,7 +61,9 @@ class CandyCrop {
              * @param activity the activity starting the CandyCropActivity
              */
             fun start(activity : Activity) {
-                activity.startActivityForResult(getIntent(activity), CANDYCROP_ACTIVITY_REQUEST)
+                activity.startActivityForResult(getIntent(activity),
+                    CANDYCROP_ACTIVITY_REQUEST
+                )
             }
 
             /**
@@ -123,7 +126,7 @@ class CandyCrop {
              * @param negative show negative button
              * @return the builder itself
              */
-            fun setButtonVisibility(positive : Boolean, negative : Boolean) : ActivityBuilder{
+            fun setButtonVisibility(positive : Boolean, negative : Boolean) : ActivityBuilder {
                 mOptions.showButtonPositive = positive
                 mOptions.showButtonNegative = negative
                 return this

@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop;
+package com.workwithinfinity.android;
 
 import org.junit.Test;
 

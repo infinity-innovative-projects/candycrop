@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.graphics.Color
 import android.net.Uri

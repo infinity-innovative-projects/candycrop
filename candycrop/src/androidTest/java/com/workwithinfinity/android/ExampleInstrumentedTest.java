@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop;
+package com.workwithinfinity.android;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

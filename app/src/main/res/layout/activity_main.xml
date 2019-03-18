@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity" android:id="@+id/main_layout">
+        tools:context=".candycrop.MainActivity" android:id="@+id/main_layout">
     <TextView
             android:text="CandyCrop can be used as View like this"
             android:layout_width="wrap_content"
@@ -15,7 +15,7 @@
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             android:layout_marginTop="16dp" android:layout_marginBottom="8dp"/>
-    <com.workwithinfinity.candycrop.CandyCropView
+    <com.workwithinfinity.android.candycrop.CandyCropView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/candyCropView"

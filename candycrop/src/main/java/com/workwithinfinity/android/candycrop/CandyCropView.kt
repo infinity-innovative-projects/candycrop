@@ -1,11 +1,9 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.content.Context
 import android.graphics.*
 import android.net.Uri
-import android.opengl.GLES10
 import android.os.AsyncTask
-import android.provider.MediaStore
 import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -330,7 +328,12 @@ class CandyCropView(context : Context,attrs : AttributeSet? = null) : View(conte
         mUri = uri
         val currentTask = mCandyUriLoadWorkerTask?.get()
         currentTask?.cancel(true)
-        mCandyUriLoadWorkerTask = WeakReference(CandyUriLoadWorkerTask(uri,WeakReference(this)))
+        mCandyUriLoadWorkerTask = WeakReference(
+            CandyUriLoadWorkerTask(
+                uri,
+                WeakReference(this)
+            )
+        )
         mCandyUriLoadWorkerTask?.get()?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
 
@@ -368,19 +371,22 @@ class CandyCropView(context : Context,attrs : AttributeSet? = null) : View(conte
         val bm = mBitmap ?: return
         val currentTask = mCandyCropWorkerTask?.get()
         currentTask?.cancel(true)
-        mCandyCropWorkerTask = WeakReference(CandyCropWorkerTask(
-            source =bm,
-            sourceUri = mUri,
-            destUri = mResultUri,
-            cropRect = mCropRect,
-            scaleFactor = mScaleFactor,
-            positionX = mRenderPositionX,
-            positionY = mRenderPositionY,
-            useFilter = true,
-            resultWidth = mResultWidth,
-            resultHeight = mResultHeight,
-            backgroundColor = mBackgroundColor,
-            view = WeakReference(this)))
+        mCandyCropWorkerTask = WeakReference(
+            CandyCropWorkerTask(
+                source = bm,
+                sourceUri = mUri,
+                destUri = mResultUri,
+                cropRect = mCropRect,
+                scaleFactor = mScaleFactor,
+                positionX = mRenderPositionX,
+                positionY = mRenderPositionY,
+                useFilter = true,
+                resultWidth = mResultWidth,
+                resultHeight = mResultHeight,
+                backgroundColor = mBackgroundColor,
+                view = WeakReference(this)
+            )
+        )
         mCandyCropWorkerTask?.get()?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
 

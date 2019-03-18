@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycroptest
+package com.workwithinfinity.android.candycrop
 
 import android.app.Activity
 import android.content.Intent
@@ -9,8 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.workwithinfinity.candycrop.CandyCrop
-import com.workwithinfinity.candycrop.CandyCropView
+import com.workwithinfinity.android.R
 import java.io.File
 
 class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
@@ -143,7 +142,8 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         } else if(requestCode == CandyCrop.CANDYCROP_ACTIVITY_REQUEST) {
             if(resultCode == Activity.RESULT_OK) {
                 if(data!=null) {
-                    val result = data.getParcelableExtra<CandyCrop.CandyCropActivityResult>(CandyCrop.CANDYCROP_RESULT_EXTRA)
+                    val result = data.getParcelableExtra<CandyCrop.CandyCropActivityResult>(
+                        CandyCrop.CANDYCROP_RESULT_EXTRA)
                     if(result.resultUri!=null) {
                         cropView.setImageUriAsync(result.resultUri!!)
                     }

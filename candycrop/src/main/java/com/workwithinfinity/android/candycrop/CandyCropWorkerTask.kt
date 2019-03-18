@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -39,7 +39,7 @@ class CandyCropWorkerTask(private val source : Bitmap,
                           private val resultHeight : Int,
                           @ColorInt private val backgroundColor : Int,
                           private val view : WeakReference<CandyCropView>
-) : AsyncTask<Unit,Unit,CandyCropView.CropResult>() {
+) : AsyncTask<Unit,Unit, CandyCropView.CropResult>() {
 
     /**
      * Crops the image and saves it to destUri (if destUri != null)
@@ -47,7 +47,7 @@ class CandyCropWorkerTask(private val source : Bitmap,
      */
     override fun doInBackground(vararg params: Unit?): CandyCropView.CropResult {
         if(isCancelled) {
-            return CandyCropView.CropResult(null,null,null,null)
+            return CandyCropView.CropResult(null, null, null, null)
         }
 
         //resize the cropping dimension with scaleFactor
@@ -92,7 +92,7 @@ class CandyCropWorkerTask(private val source : Bitmap,
         if(destUri!=null && context!=null) {
             saveBitmapToUri(finalBitmap,context,destUri)
         }
-        return CandyCropView.CropResult(source,sourceUri,finalBitmap,destUri)
+        return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri)
     }
 
     /**

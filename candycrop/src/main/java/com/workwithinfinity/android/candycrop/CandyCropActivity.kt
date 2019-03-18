@@ -1,22 +1,22 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import com.workwithinfinity.android.R
 
 /**
  * Activity that can be launched to crop an image
  * Use the CandyCrop.Builder to use this activity
  */
-class CandyCropActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener {
+class CandyCropActivity : AppCompatActivity(),
+    CandyCropView.OnCropCompleteListener {
 
     /** The CandyCropView */
     private lateinit var mCropView : CandyCropView

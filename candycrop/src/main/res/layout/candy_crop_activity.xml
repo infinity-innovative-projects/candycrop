@@ -15,7 +15,7 @@
             android:id="@+id/toolbar" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
     />
-    <com.workwithinfinity.candycrop.CandyCropView
+    <com.workwithinfinity.android.candycrop.CandyCropView
             android:id="@+id/cropping_view"
             android:layout_width="match_parent"
             android:layout_height="0dp" app:layout_constraintBottom_toBottomOf="parent"

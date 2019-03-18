@@ -1,4 +1,4 @@
-package com.workwithinfinity.candycrop
+package com.workwithinfinity.android.candycrop
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -36,7 +36,7 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
         } else {
             bm
         }
-        return UriLoadResult(finalBm,uri)
+        return UriLoadResult(finalBm, uri)
     }
 
     /**
