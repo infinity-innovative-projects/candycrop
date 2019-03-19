@@ -28,26 +28,17 @@ class CandyCrop {
         /** id for the read permission request */
         const val CANDYCROP_REQUEST_READ_PERMISSION = 3554
 
+
+        /**
+         * Checks if Read permission is required
+         * @param context the context
+         * @param uri uri to the file that should be read
+         * @return true if the permission is requiered
+         */
         fun checkReadPermissionRequired(context : Context,uri : Uri) : Boolean {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    && checkUriRequiresPermission(context,uri)
         }
-
-        private fun checkUriRequiresPermission(context : Context, uri : Uri) : Boolean {
-            return true
-            /*
-            val cr = context.contentResolver
-            return try {
-                val s = cr.openInputStream(uri)
-                s?.close()
-                false
-            } catch (e : Exception) {
-                true
-            }
-            */
-        }
-
     }
 
 

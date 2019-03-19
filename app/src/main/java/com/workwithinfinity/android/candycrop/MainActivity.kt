@@ -123,7 +123,6 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
     private fun checkAndLoad(uri : Uri) {
         mUri = uri
         if(CandyCrop.checkReadPermissionRequired(this,uri)) {
-            Log.d("CandyCropTest","request permission")
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION)
             return
         }
