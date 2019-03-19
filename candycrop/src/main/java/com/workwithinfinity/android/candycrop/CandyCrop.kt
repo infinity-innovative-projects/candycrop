@@ -159,6 +159,27 @@ class CandyCrop {
             }
 
             /**
+             * Sets the label of the positive button
+             * @param text the text
+             * @return the builder itself
+             */
+            fun setPositiveText(text : String) : ActivityBuilder {
+                mOptions.positiveText = text
+                return this
+            }
+
+            /**
+             * Sets the label of the negative button
+             * @param text the text
+             * @return the builder itself
+             */
+            fun setNegativeText(text : String) : ActivityBuilder {
+                mOptions.negativeText = text
+                return this
+            }
+
+
+            /**
              * Sets whether the positive and negative buttons should be displayed
              * @param positive show positive button
              * @param negative show negative button

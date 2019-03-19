@@ -68,6 +68,14 @@ class CandyCropActivity : AppCompatActivity(),
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        if(mOptions.positiveText.isNotBlank()) {
+            mTxtOk.text = mOptions.positiveText
+        }
+
+        if(mOptions.negativeText.isNotBlank()) {
+            mTxtCancel.text = mOptions.negativeText
+        }
+
         with(mCropView) {
             setAspectRatio(mOptions.ratioX,mOptions.ratioY)
             setResultUri(mOptions.resultUri)

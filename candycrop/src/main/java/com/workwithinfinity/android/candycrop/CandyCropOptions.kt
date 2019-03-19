@@ -35,5 +35,7 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             var showButtonPositive : Boolean = true,
                             var showButtonNegative : Boolean = true,
                             @ColorInt var buttonTextColor : Int = Color.WHITE,
-                            var rotation : Float = 0f
+                            var rotation : Float = 0f,
+                            var positiveText : String = "",
+                            var negativeText : String = ""
 ) : Parcelable
