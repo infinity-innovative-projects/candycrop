@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.ColorInt
+import android.support.v4.app.Fragment
 import kotlinx.android.parcel.Parcelize
 
 class CandyCrop {
@@ -82,6 +83,15 @@ class CandyCrop {
                 activity.startActivityForResult(getIntent(activity),
                     CANDYCROP_ACTIVITY_REQUEST
                 )
+            }
+
+            /**
+             * starts the CandyCropActivity using Fragments
+             * @param context the context
+             * @param fragment the fragment
+             */
+            fun start(context : Context,fragment : Fragment) {
+                fragment.startActivityForResult(getIntent(context), CANDYCROP_ACTIVITY_REQUEST)
             }
 
             /**
