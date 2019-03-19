@@ -53,12 +53,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
     private var mAspectRatioY : Int = 1
     /**Background color of the view*/
     @ColorInt private var mBackgroundColor : Int = Color.TRANSPARENT
-    /** Alpha of the overlay. 0-255 */
-    private var mOverlayAlpha : Int = 150
+    /** Color of the overlay */
+    @ColorInt private var mOverlayColor : Int = Color.argb(150,0,0,0)
     /** size of the cropping window. 1f=Full View 0.5f=Half the view */
     private var mCropSize : Float = 0.9f
     /** stores if the view is working in the background */
     private var mIsLoading : Boolean = false
+    /** stores if the rect should be drawn */
+    private var mDrawRect : Boolean = true
 
 
     /**
@@ -101,7 +103,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         }
         if(obm!=null) {
             canvas.drawBitmap(obm,0f,0f,null)
-            canvas.drawRect(mCropRect,mPaintCropRect)
+            if(mDrawRect) {
+                canvas.drawRect(mCropRect,mPaintCropRect)
+            }
         }
         if(mIsLoading) {
             //make the view gray during loading
@@ -121,6 +125,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
     }
 
     /**
+     * Sets if the rect should be drawn
+     * @param drawRect true for draw else false
+     */
+    fun setDrawRect(drawRect : Boolean) {
+        mDrawRect = drawRect
+    }
+
+    /**
      * Sets the background color of the view
      * @param color the desired color as ColorInt
      */
@@ -136,12 +148,10 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
 
     /**
      * sets the alpha of the overlay
-     * @param alpha the desired alpha ranging from 0 to 255
+     * @param color the desired color
      */
-    fun setOverlayAlpha(alpha : Int) {
-        if(alpha<0 || alpha > 255)
-            return
-        mOverlayAlpha = alpha
+    fun setOverlayColor(@ColorInt color : Int) {
+        mOverlayColor = color
     }
 
     /**
@@ -226,8 +236,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         val conf = Bitmap.Config.ARGB_8888
         val bm = Bitmap.createBitmap(width,height,conf)
         val canvas = Canvas(bm)
-        val c = Color.argb(mOverlayAlpha,0,0,0)
-        canvas.drawColor(c)
+        canvas.drawColor(mOverlayColor)
         canvas.drawRect(mCropRect,mPaintDelete)
         mOverlayBitmap = bm
     }

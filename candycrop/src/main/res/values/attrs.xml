@@ -2,9 +2,10 @@
 <resources>
     <declare-styleable name="CandyCropView">
         <attr name="bg_color" format="color"/>
-        <attr name="overlay_alpha" format="integer"/>
+        <attr name="overlay_color" format="color"/>
         <attr name="crop_size" format="float"/>
         <attr name="crop_aspect_ratio_x" format="integer"/>
         <attr name="crop_aspect_ratio_y" format="integer"/>
+        <attr name="draw_rect" format="boolean"/>
     </declare-styleable>
 </resources>

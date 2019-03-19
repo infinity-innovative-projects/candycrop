@@ -27,7 +27,7 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             var resultUri : Uri? = null,
                             var ratioX : Int = 1,
                             var ratioY : Int = 1,
-                            var overlayAlpha : Int = 125,
+                            @ColorInt var overlayColor : Int = Color.argb(150,0,0,0),
                             var cropSize : Float = 0.9f,
                             var resultWidth : Int = 100,
                             var resultHeight : Int = 100,
@@ -37,5 +37,8 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             @ColorInt var buttonTextColor : Int = Color.WHITE,
                             var rotation : Float = 0f,
                             var positiveText : String = "",
-                            var negativeText : String = ""
+                            var negativeText : String = "",
+                            var labelText : String = "",
+                            var drawRect : Boolean = true
+
 ) : Parcelable

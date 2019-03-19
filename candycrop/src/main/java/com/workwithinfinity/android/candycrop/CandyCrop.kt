@@ -137,12 +137,12 @@ class CandyCrop {
             }
 
             /**
-             * Sets the desired alpah of the overlay
-             * @param alpha the desired alpha ranging from 0 to 255
+             * Sets the desired color of the overlay
+             * @param color the desired color
              * @return the builder itself
              */
-            fun setOverlayAlpha(alpha : Int) : ActivityBuilder {
-                mOptions.overlayAlpha = alpha
+            fun setOverlayColor(@ColorInt color : Int) : ActivityBuilder {
+                mOptions.overlayColor = color
                 return this
             }
 
@@ -175,6 +175,26 @@ class CandyCrop {
              */
             fun setNegativeText(text : String) : ActivityBuilder {
                 mOptions.negativeText = text
+                return this
+            }
+
+            /**
+             * Sets the label
+             * @param text the text
+             * @return the builder itself
+             */
+            fun setLabelText(text : String) : ActivityBuilder {
+                mOptions.labelText = text
+                return this
+            }
+
+            /**
+             * Sets if the rect should be drawn
+             * @param drawRect if the rect should be drawn
+             * @return the builder itself
+             */
+            fun setDrawRect(drawRect : Boolean) : ActivityBuilder {
+                mOptions.drawRect = drawRect
                 return this
             }
 

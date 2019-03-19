@@ -35,6 +35,8 @@ class CandyCropActivity : AppCompatActivity(),
     private lateinit var mTxtOk : TextView
     /** the negative button */
     private lateinit var mTxtCancel : TextView
+    /** the label text */
+    private lateinit var mTxtLabel : TextView
 
     /**
      * onCreate of the activity
@@ -49,6 +51,7 @@ class CandyCropActivity : AppCompatActivity(),
         mToolbar = findViewById(R.id.toolbar)
         mTxtOk = findViewById(R.id.txt_ok)
         mTxtCancel = findViewById(R.id.txt_cancel)
+        mTxtLabel = findViewById(R.id.txt_label)
         setSupportActionBar(mToolbar)
 
         val bundle = intent.getBundleExtra(CandyCrop.CANDYCROP_BUNDLE)
@@ -76,15 +79,20 @@ class CandyCropActivity : AppCompatActivity(),
             mTxtCancel.text = mOptions.negativeText
         }
 
+        if(mOptions.labelText.isNotBlank()) {
+            mTxtLabel.text = mOptions.labelText
+        }
+
         with(mCropView) {
             setAspectRatio(mOptions.ratioX,mOptions.ratioY)
             setResultUri(mOptions.resultUri)
             setOnCropCompleteListener(this@CandyCropActivity)
-            setOverlayAlpha(mOptions.overlayAlpha)
+            setOverlayColor(mOptions.overlayColor)
             setResultSize(mOptions.resultWidth,mOptions.resultHeight)
             setCropSize(mOptions.cropSize)
             setBgColor(mOptions.backgroundColor)
             setInitialRotation(mOptions.rotation)
+            setDrawRect(mOptions.drawRect)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {

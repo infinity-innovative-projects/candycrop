@@ -50,7 +50,8 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
             val aX = at.getInteger(R.styleable.CandyCropView_crop_aspect_ratio_x,1)
             val aY = at.getInteger(R.styleable.CandyCropView_crop_aspect_ratio_y,1)
             mCropView.setAspectRatio(aX,aY)
-            mCropView.setOverlayAlpha(at.getInteger(R.styleable.CandyCropView_overlay_alpha,125))
+            mCropView.setOverlayColor(at.getColor(R.styleable.CandyCropView_overlay_color,Color.argb(150,0,0,0)))
+            mCropView.setDrawRect(at.getBoolean(R.styleable.CandyCropView_draw_rect,true))
             at.recycle()
         }
     }
@@ -67,8 +68,15 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      * sets the alpha of the overlay
      * @param alpha the desired alpha ranging from 0 to 255
      */
-    fun setOverlayAlpha(alpha : Int) {
-        mCropView.setOverlayAlpha(alpha)
+    fun setOverlayColor(@ColorInt color : Int) {
+        mCropView.setOverlayColor(color)
+    }
+    /**
+     * Sets if the rect should be drawn
+     * @param drawRect true for draw else false
+     */
+    fun setDrawRect(drawRect : Boolean) {
+        mCropView.setDrawRect(drawRect)
     }
 
     /**
@@ -81,6 +89,10 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
         mCropView.setCropSize(size)
     }
 
+    /**
+     * Sets the initial rotation of the image
+     * @param rotation the rotation
+     */
     fun setInitialRotation(rotation : Float) {
         mRotation = rotation
     }
