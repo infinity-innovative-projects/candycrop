@@ -1,14 +1,19 @@
 package com.workwithinfinity.android.candycrop
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import com.workwithinfinity.android.R
 
 /**
@@ -71,6 +76,7 @@ class CandyCropActivity : AppCompatActivity(),
             setResultSize(mOptions.resultWidth,mOptions.resultHeight)
             setCropSize(mOptions.cropSize)
             setBgColor(mOptions.backgroundColor)
+            setInitialRotation(mOptions.rotation)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {
@@ -93,17 +99,34 @@ class CandyCropActivity : AppCompatActivity(),
 
         if(savedInstanceState == null) {
             if(sourceUri!= null && sourceUri !=(Uri.EMPTY)) {
-                mSourceUri = sourceUri
-                mCropView.setImageUriAsync(mSourceUri)
+                checkAndLoad(sourceUri)
             }
         } else {
             val uri : Uri? = savedInstanceState.getParcelable("sourceUri")
             if(uri!=null)
             {
-                mSourceUri = uri
-                mCropView.setImageUriAsync(mSourceUri)
+                checkAndLoad(uri)
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                mCropView.setImageUriAsync(mSourceUri)
+            } else {
+                Toast.makeText(this,"Permission required", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun checkAndLoad(uri : Uri) {
+        mSourceUri = uri
+        if(CandyCrop.checkReadPermissionRequired(this,uri)) {
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION)
+            return
+        }
+        mCropView.setImageUriAsync(uri)
     }
 
     /**

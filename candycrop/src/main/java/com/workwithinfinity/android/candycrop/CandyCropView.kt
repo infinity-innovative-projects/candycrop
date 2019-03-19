@@ -28,6 +28,8 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     private var mResultWidth = 1024
     /** Height of the final cropped image in pixel */
     private var mResultHeight = 1024
+    /** The initial rotation */
+    private var mRotation = 0f
     /** Uri of the source image */
     private var mUri : Uri? = null
     /** Uri where the cropped image should be saved to */
@@ -78,6 +80,10 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      */
     fun setCropSize(size : Float) {
         mCropView.setCropSize(size)
+    }
+
+    fun setInitialRotation(rotation : Float) {
+        mRotation = rotation
     }
 
     /**
@@ -202,7 +208,8 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
         mCandyUriLoadWorkerTask = WeakReference(
             CandyUriLoadWorkerTask(
                 uri,
-                WeakReference(this)
+                WeakReference(this),
+                mRotation
             )
         )
         startLoading()
@@ -235,7 +242,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     }
 
     /**
-     * Containerclass for the cropping result
+     * Container class for the cropping result
      * originalBitmap - the source bitmap
      * originalUri - the uri of the source bitmap
      * croppedBitmap - the cropped bitmap

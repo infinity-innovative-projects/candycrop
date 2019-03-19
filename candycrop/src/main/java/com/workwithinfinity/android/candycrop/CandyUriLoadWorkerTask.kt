@@ -1,10 +1,14 @@
 package com.workwithinfinity.android.candycrop
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.opengl.GLES10
 import android.os.AsyncTask
 import android.provider.MediaStore
+import android.util.Log
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
@@ -13,7 +17,7 @@ import kotlin.math.roundToInt
  * @param uri Uri of the image to load
  * @param view WeakReference of the view starting the task
  */
-class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakReference<CandyCropView>) : AsyncTask<Any, Any, CandyUriLoadWorkerTask.UriLoadResult>() {
+class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakReference<CandyCropView>, private val rotation : Float) : AsyncTask<Any, Any, CandyUriLoadWorkerTask.UriLoadResult>() {
 
     /**
      * Loads the image into a bitmap and resize it if it's to big
@@ -21,11 +25,26 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      */
     override fun doInBackground(vararg params: Any?): UriLoadResult {
         val bm = MediaStore.Images.Media.getBitmap(view.get()?.context?.contentResolver,uri)
-        //TODO read exif and do stuff with it
+        val exif = getExifData(view.get()?.context,uri)
+        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL)
+        val exifRotation = when(orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+            else -> 0f
+        }
+
+        val sumRotation = (exifRotation + rotation)%360
+        val finalRotation = when {
+            (sumRotation>0f && sumRotation<=90f) -> 90f
+            (sumRotation>90 && sumRotation<=180) -> 180f
+            (sumRotation>180 && sumRotation<=270) -> 270f
+            else -> 0f
+        }
 
         //images bigger than GL_MAX_TEXTURE_SIZE cant be rendered in the view
         val maxSize = GLES10.GL_MAX_TEXTURE_SIZE
-        val finalBm = if(bm.width > maxSize || bm.height > maxSize) {
+        val sizedBm = if(bm.width > maxSize || bm.height > maxSize) {
             val dx = maxSize/bm.width.toFloat()
             val dy = maxSize/bm.height.toFloat()
             if(dx<dy) {
@@ -36,7 +55,47 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
         } else {
             bm
         }
+
+        val finalBm = if(finalRotation==0f) {
+            sizedBm
+        } else {
+            val matrix = Matrix()
+            matrix.postRotate(finalRotation)
+            Bitmap.createBitmap(sizedBm,0,0,sizedBm.width,sizedBm.height,matrix,true)
+        }
         return UriLoadResult(finalBm, uri)
+    }
+
+    /**
+     * Reads the ExifInterface of the given uri
+     * @param context the context
+     * @param uri the uri
+     * @return the ExifInterface
+     */
+    private fun getExifData(context : Context?,uri : Uri) : ExifInterface?  {
+
+        val uriParts = uri.toString().split(":")
+        return when(uriParts[0]) {
+            "content" -> { //uri with "content:....." needs content resolver to get the path
+                if (context == null) {
+                    null
+                } else {
+                    val col = MediaStore.Images.ImageColumns.DATA
+                    val c = context.contentResolver.query(uri, arrayOf(col), null, null, null)
+                    if (c != null && c.moveToFirst()) {
+                        val path = c.getString(c.getColumnIndex(col))
+                        c.close()
+                        ExifInterface(path)
+                    } else {
+                        null
+                    }
+                }
+            }
+            "file" -> { //uri with "file:...." can just be converted to path
+                ExifInterface(uri.encodedPath)
+            }
+            else -> null
+        }
     }
 
     /**

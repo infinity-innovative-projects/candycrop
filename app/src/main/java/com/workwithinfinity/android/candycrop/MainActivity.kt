@@ -1,14 +1,18 @@
 package com.workwithinfinity.android.candycrop
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import com.workwithinfinity.android.R
 import java.io.File
 
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         if(savedInstanceState!=null) {
             val uri : Uri? = savedInstanceState.getParcelable("sourceUri")
             if(uri!=null) {
-                cropView.setImageUriAsync(uri)
+                checkAndLoad(uri)
             }
         }
     }
@@ -105,6 +109,27 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         startActivityForResult(Intent.createChooser(intent,"Select Picture"), CHOOSE_IMAGE)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
+            val uri = mUri
+            if(uri!=null && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                cropView.setImageUriAsync(uri)
+            } else {
+                Toast.makeText(this,"Permission required",Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun checkAndLoad(uri : Uri) {
+        mUri = uri
+        if(CandyCrop.checkReadPermissionRequired(this,uri)) {
+            Log.d("CandyCropTest","request permission")
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION)
+            return
+        }
+        cropView.setImageUriAsync(uri)
+    }
+
     /**
      * Starts a CandyCropActivity with the selected source
      */
@@ -119,6 +144,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .setUseToolbar(true)
             .setCropRatio(10,5)
             .setCropWindowSize(0.9f)
+            .setRotation(20f)
             .start(this)
     }
 
@@ -135,7 +161,7 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
                 if(data!=null) {
                     val result = data.dataString
                     val uri = Uri.parse(result)
-                    cropView.setImageUriAsync(uri)
+                    checkAndLoad(uri)
                 }
             } else {
                 Log.d(this.javaClass.name,"Failed to choose picture")
@@ -144,9 +170,9 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             if(resultCode == Activity.RESULT_OK) {
                 if(data!=null) {
                     val result = data.getParcelableExtra<CandyCrop.CandyCropActivityResult>(
-                        CandyCrop.CANDYCROP_RESULT_EXTRA)
-                    if(result.resultUri!=null) {
-                        cropView.setImageUriAsync(result.resultUri!!)
+                        CandyCrop.CANDYCROP_RESULT_EXTRA)?.resultUri
+                    if(result!=null) {
+                        checkAndLoad(result)
                     }
                 }
             } else {

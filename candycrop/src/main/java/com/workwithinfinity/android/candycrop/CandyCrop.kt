@@ -1,9 +1,12 @@
 package com.workwithinfinity.android.candycrop
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.ColorInt
@@ -22,8 +25,32 @@ class CandyCrop {
         const val CANDYCROP_RESULT_EXTRA = "CANDYCROP_RESULT_EXTRA"
         /** id for the activity request */
         const val CANDYCROP_ACTIVITY_REQUEST = 2104
+        /** id for the read permission request */
+        const val CANDYCROP_REQUEST_READ_PERMISSION = 3554
+
+        fun checkReadPermissionRequired(context : Context,uri : Uri) : Boolean {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    && checkUriRequiresPermission(context,uri)
+        }
+
+        private fun checkUriRequiresPermission(context : Context, uri : Uri) : Boolean {
+            return true
+            /*
+            val cr = context.contentResolver
+            return try {
+                val s = cr.openInputStream(uri)
+                s?.close()
+                false
+            } catch (e : Exception) {
+                true
+            }
+            */
+        }
 
     }
+
+
 
     object Builder {
 
@@ -64,6 +91,16 @@ class CandyCrop {
                 activity.startActivityForResult(getIntent(activity),
                     CANDYCROP_ACTIVITY_REQUEST
                 )
+            }
+
+            /**
+             * Sets the initial rotation of the loaded image
+             * @param rotation the desired rotation
+             * @return the builder itself
+             */
+            fun setRotation(rotation : Float) : ActivityBuilder {
+                mOptions.rotation = rotation
+                return this
             }
 
             /**

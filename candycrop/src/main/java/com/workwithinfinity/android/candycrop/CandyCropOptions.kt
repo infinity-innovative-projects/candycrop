@@ -20,6 +20,7 @@ import kotlinx.android.parcel.Parcelize
  * @param showButtonPositive Show the positive button
  * @param showButtonNegative show the negative button
  * @param buttonTextColor color of the positive and negative button
+ * @param rotation rotation of the loaded image in degree
  */
 @Parcelize
 data class CandyCropOptions(var useToolbar : Boolean = true,
@@ -33,5 +34,6 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             @ColorInt var backgroundColor : Int = Color.TRANSPARENT,
                             var showButtonPositive : Boolean = true,
                             var showButtonNegative : Boolean = true,
-                            @ColorInt var buttonTextColor : Int = Color.WHITE
+                            @ColorInt var buttonTextColor : Int = Color.WHITE,
+                            var rotation : Float = 0f
 ) : Parcelable
