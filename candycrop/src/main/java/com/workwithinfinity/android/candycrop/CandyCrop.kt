@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -195,6 +196,27 @@ class CandyCrop {
              */
             fun setDrawRect(drawRect : Boolean) : ActivityBuilder {
                 mOptions.drawRect = drawRect
+                return this
+            }
+
+            /**
+             * Sets the desired format of the saved picture
+             * @param format the format
+             * @return the builder itself
+             */
+            fun setResultFormat(format : Bitmap.CompressFormat) : ActivityBuilder {
+                mOptions.format = format
+                return this
+            }
+
+            /**
+             * Sets the desired quality of the saved picture
+             * @param quality the desired quality. Ignored if not between 0 and 100
+             * @return the builder itself
+             */
+            fun setResultQuality(quality : Int) : ActivityBuilder {
+                if(quality !in 0..100) return this
+                mOptions.quality = quality
                 return this
             }
 

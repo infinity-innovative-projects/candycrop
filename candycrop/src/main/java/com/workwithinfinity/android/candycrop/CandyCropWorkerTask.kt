@@ -38,7 +38,9 @@ class CandyCropWorkerTask(private val source : Bitmap,
                           private val resultWidth : Int,
                           private val resultHeight : Int,
                           @ColorInt private val backgroundColor : Int,
-                          private val view : WeakReference<CandyCropView>
+                          private val view : WeakReference<CandyCropView>,
+                          private val quality : Int = 95,
+                          private val format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 ) : AsyncTask<Unit,Unit, CandyCropView.CropResult>() {
 
     /**
@@ -84,13 +86,12 @@ class CandyCropWorkerTask(private val source : Bitmap,
                 else -> Bitmap.createScaledBitmap(croppedBitmap, resultWidth, resultHeight, useFilter)
             }
 
-            //Bitmap.createScaledBitmap(croppedBitmap, resultWidth, resultHeight, useFilter)
         } else {
             croppedBitmap
         }
         val context = view.get()?.context
         if(destUri!=null && context!=null) {
-            saveBitmapToUri(finalBitmap,context,destUri)
+            saveBitmapToUri(finalBitmap,context,destUri,format,quality)
         }
         return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri)
     }
@@ -109,12 +110,12 @@ class CandyCropWorkerTask(private val source : Bitmap,
      * @param context the context
      * @param uri the uri to be saved to
      */
-    private fun saveBitmapToUri(bm : Bitmap, context : Context, uri : Uri) {
-
+    private fun saveBitmapToUri(bm : Bitmap, context : Context, uri : Uri, format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality : Int = 95) {
+        val q = if(quality in 0..100) quality else 95
         var outputStream : OutputStream? = null
         try {
             outputStream = context.contentResolver.openOutputStream(uri)
-            bm.compress(Bitmap.CompressFormat.PNG,100,outputStream)
+            bm.compress(format,q,outputStream)
             Log.d("CandyCropWorkerTask","saving bitmap to ${uri.path}")
         } finally {
             outputStream?.close()

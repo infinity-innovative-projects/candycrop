@@ -93,6 +93,8 @@ class CandyCropActivity : AppCompatActivity(),
             setBgColor(mOptions.backgroundColor)
             setInitialRotation(mOptions.rotation)
             setDrawRect(mOptions.drawRect)
+            setQuality(mOptions.quality)
+            setFormat(mOptions.format)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {

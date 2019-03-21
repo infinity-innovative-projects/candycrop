@@ -37,6 +37,10 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     private var mCandyCropWorkerTask : WeakReference<CandyCropWorkerTask>? = null
     /** WorkerTask used to load the image async */
     private var mCandyUriLoadWorkerTask : WeakReference<CandyUriLoadWorkerTask>? = null
+    /** Saves the desired quality of the saved picture */
+    private var mResultQuality : Int = 95
+    /** Saves the desired format of the saved picture */
+    private var mResultFormat : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
     init {
         inflate(context, R.layout.crop_view_layout,this)
@@ -88,6 +92,23 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     fun setCropSize(size : Float) {
         mCropView.setCropSize(size)
     }
+
+    /**
+     * Sets the desired format of the saved picture
+     * @param format the format
+     */
+    fun setFormat(format : Bitmap.CompressFormat) {
+        mResultFormat = format
+    }
+
+    /**
+     * Sets the desired quality of the saved picture
+     * @param quality the quality between 0 and 100. Defaults to 95 if invalid
+     */
+    fun setQuality(quality : Int) {
+        mResultQuality=if(quality in 0..100) quality else 95
+    }
+
 
     /**
      * Sets the initial rotation of the image
@@ -201,7 +222,9 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
                 resultWidth = mResultWidth,
                 resultHeight = mResultHeight,
                 backgroundColor = mCropView.getBgColor(),
-                view = WeakReference(this)
+                view = WeakReference(this),
+                quality = mResultQuality,
+                format = mResultFormat
             )
         )
         startLoading()

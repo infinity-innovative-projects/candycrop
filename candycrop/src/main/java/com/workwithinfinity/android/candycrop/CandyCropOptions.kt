@@ -1,5 +1,6 @@
 package com.workwithinfinity.android.candycrop
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Parcelable
@@ -39,6 +40,8 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             var positiveText : String = "",
                             var negativeText : String = "",
                             var labelText : String = "",
-                            var drawRect : Boolean = true
+                            var drawRect : Boolean = true,
+                            var quality : Int = 95,
+                            var format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
 ) : Parcelable
