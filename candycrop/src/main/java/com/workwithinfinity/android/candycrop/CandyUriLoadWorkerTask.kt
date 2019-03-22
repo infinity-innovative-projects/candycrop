@@ -3,12 +3,11 @@ package com.workwithinfinity.android.candycrop
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.media.ExifInterface
+import android.support.media.ExifInterface
 import android.net.Uri
 import android.opengl.GLES10
 import android.os.AsyncTask
 import android.provider.MediaStore
-import android.util.Log
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
@@ -70,32 +69,14 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * Reads the ExifInterface of the given uri
      * @param context the context
      * @param uri the uri
-     * @return the ExifInterface
+     * @return the ExifInterface or null if it can't read it
      */
     private fun getExifData(context : Context?,uri : Uri) : ExifInterface?  {
-
-        val uriParts = uri.toString().split(":")
-        return when(uriParts[0]) {
-            "content" -> { //uri with "content:....." needs content resolver to get the path
-                if (context == null) {
-                    null
-                } else {
-                    val col = MediaStore.Images.ImageColumns.DATA
-                    val c = context.contentResolver.query(uri, arrayOf(col), null, null, null)
-                    if (c != null && c.moveToFirst()) {
-                        val path = c.getString(c.getColumnIndex(col))
-                        c.close()
-                        ExifInterface(path)
-                    } else {
-                        null
-                    }
-                }
-            }
-            "file" -> { //uri with "file:...." can just be converted to path
-                ExifInterface(uri.encodedPath)
-            }
-            else -> null
-        }
+        if(context==null) return null
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val exif = ExifInterface(inputStream)
+        inputStream.close()
+        return exif
     }
 
     /**
