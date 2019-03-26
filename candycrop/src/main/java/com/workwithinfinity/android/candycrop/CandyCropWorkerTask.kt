@@ -89,10 +89,12 @@ class CandyCropWorkerTask(private val source : Bitmap,
         } else {
             croppedBitmap
         }
+
         val context = view.get()?.context
         if(destUri!=null && context!=null) {
             saveBitmapToUri(finalBitmap,context,destUri,format,quality)
         }
+        croppedBitmap.recycle()
         return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri)
     }
 
@@ -116,7 +118,6 @@ class CandyCropWorkerTask(private val source : Bitmap,
         try {
             outputStream = context.contentResolver.openOutputStream(uri)
             bm.compress(format,q,outputStream)
-            Log.d("CandyCropWorkerTask","saving bitmap to ${uri.path}")
         } finally {
             outputStream?.close()
         }
