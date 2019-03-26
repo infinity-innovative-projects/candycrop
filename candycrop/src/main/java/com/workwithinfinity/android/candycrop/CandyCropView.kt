@@ -70,7 +70,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
 
     /**
      * sets the alpha of the overlay
-     * @param alpha the desired alpha ranging from 0 to 255
+     * @param color the desired color of the overlay
      */
     fun setOverlayColor(@ColorInt color : Int) {
         mCropView.setOverlayColor(color)
@@ -215,9 +215,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
                 sourceUri = mUri,
                 destUri = mResultUri,
                 cropRect = mCropView.getCropRect(),
-                scaleFactor = mCropView.getScaleFactor(),
-                positionX = mCropView.getRenderPositionX(),
-                positionY = mCropView.getRenderPositionY(),
+                matrix = mCropView.matrix,
                 useFilter = true,
                 resultWidth = mResultWidth,
                 resultHeight = mResultHeight,

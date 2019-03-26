@@ -1,9 +1,7 @@
 package com.workwithinfinity.android.candycrop
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
+import android.graphics.*
 import android.net.Uri
 import android.os.AsyncTask
 import android.support.annotation.ColorInt
@@ -31,9 +29,7 @@ class CandyCropWorkerTask(private val source : Bitmap,
                           private val sourceUri : Uri?,
                           private val destUri : Uri?,
                           private val cropRect : Rect,
-                          private val scaleFactor : Float,
-                          private val positionX : Int,
-                          private val positionY : Int,
+                          private val matrix : Matrix,
                           private val useFilter : Boolean = true,
                           private val resultWidth : Int,
                           private val resultHeight : Int,
@@ -52,13 +48,14 @@ class CandyCropWorkerTask(private val source : Bitmap,
             return CandyCropView.CropResult(null, null, null, null)
         }
 
-        //resize the cropping dimension with scaleFactor
-        val cropPositionX = ((cropRect.left-positionX)/scaleFactor).roundToInt()
-        val cropPositionY = ((cropRect.top-positionY)/scaleFactor).roundToInt()
-        val cropWidth = (cropRect.width()/scaleFactor).roundToInt()
-        val cropHeight = (cropRect.height()/scaleFactor).roundToInt()
+        val matrixInverted = Matrix()
+        matrix.invert(matrixInverted)
+        val cropRectFloat = RectF(cropRect)
+        matrixInverted.mapRect(cropRectFloat)
+
         //the actual cropping
-        val croppedBitmap = Bitmap.createBitmap(source,cropPositionX,cropPositionY,cropWidth,cropHeight)
+        //val croppedBitmap = Bitmap.createBitmap(source,cropPositionX,cropPositionY,cropWidth,cropHeight)
+        val croppedBitmap = Bitmap.createBitmap(source,cropRectFloat.left.roundToInt(),cropRectFloat.top.roundToInt(),cropRectFloat.width().roundToInt(),cropRectFloat.height().roundToInt())
 
         val finalBitmap = if(resultWidth > 0 && resultHeight > 0) {
             //resize the final image. Fills with background color if aspect ratios don't match
@@ -89,12 +86,12 @@ class CandyCropWorkerTask(private val source : Bitmap,
         } else {
             croppedBitmap
         }
-
+        //croppedBitmap.recycle()
         val context = view.get()?.context
         if(destUri!=null && context!=null) {
             saveBitmapToUri(finalBitmap,context,destUri,format,quality)
         }
-        croppedBitmap.recycle()
+
         return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri)
     }
 

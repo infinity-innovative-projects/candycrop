@@ -15,14 +15,6 @@ import kotlin.math.roundToInt
 internal class CandyCropWindowView @JvmOverloads constructor(context : Context, attrs : AttributeSet? = null,defStyles : Int = 0) : View(context,attrs,defStyles) {
     /** bitmap storing the source image */
     private var mBitmap : Bitmap? = null
-    /** Rect used to draw the image to the view */
-    private val mDestinationRect = Rect(0,0,0,0)
-    /** Rect used to draw the image to the view */
-    private val mSourceRect : Rect = Rect(0,0,0,0)
-    /** X Position of the image */
-    private var mRenderPositionX : Int = 0
-    /** Y Position of the image */
-    private var mRenderPositionY : Int = 0
     /** Scalefactor of the image */
     private var mScaleFactor : Float = 1f
     /** Rect for the cropping window */
@@ -42,9 +34,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         strokeWidth = 3f
     }
     /** stores the X position of the touch event */
-    private var mXTouch : Int = 0
+    private var mXTouch : Float = 0f
     /** stores the Y position of the touch event */
-    private var mYTouch : Int = 0
+    private var mYTouch : Float = 0f
     /** true if the image is beeing moved */
     private var mImageMoving : Boolean = false
     /**Aspect ratio of the cropping window for the x dimension */
@@ -61,6 +53,8 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
     private var mIsLoading : Boolean = false
     /** stores if the rect should be drawn */
     private var mDrawRect : Boolean = true
+    /** Matrix used to move and scale the picture */
+    private val mMatrix : Matrix = Matrix()
 
 
     /**
@@ -85,7 +79,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             if(detector==null)
                 return false
-            setScaleFactor(mScaleFactor * detector.scaleFactor)
+            mMatrix.postScale(detector.scaleFactor,detector.scaleFactor,detector.focusX,detector.focusY)
+            snapToCropRect()
+            invalidate()
             return true
         }
     })
@@ -99,7 +95,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         val bm = mBitmap
         val obm = mOverlayBitmap
         if(bm!=null) {
-            canvas.drawBitmap(bm,mSourceRect,mDestinationRect,null)
+            canvas.drawBitmap(bm,mMatrix,null)
         }
         if(obm!=null) {
             canvas.drawBitmap(obm,0f,0f,null)
@@ -111,7 +107,6 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
             //make the view gray during loading
             canvas.drawColor(Color.argb(100,0,0,0))
         }
-
     }
 
     /**
@@ -121,7 +116,6 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         super.onSizeChanged(w, h, oldw, oldh)
         updateCropRect()
         createOverlayBitmap()
-        updateRects()
     }
 
     /**
@@ -178,11 +172,6 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         invalidate()
     }
 
-    /**
-     * Gets the scale factor
-     * @return the scale factor
-     */
-    fun getScaleFactor() = mScaleFactor
 
     /**
      * Gets the rect representing the cropping window
@@ -190,24 +179,13 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
      */
     fun getCropRect() = mCropRect
 
+    override fun getMatrix() = mMatrix
+
     /**
      * Gets the source bitmap
      * @return the source bitmap
      */
     fun getBitmap() = mBitmap
-
-    /**
-     * Gets the X position of the loaded image
-     * @return the x position
-     */
-    fun getRenderPositionX() = mRenderPositionX
-
-    /**
-     * Gets the Y position of the loaded image
-     * @return the y position
-     */
-    fun getRenderPositionY() = mRenderPositionY
-
 
     /**
      * Generates the mCropRect using the set aspect ratio and crop size
@@ -261,23 +239,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
      */
     fun setBitmap(bitmap : Bitmap) {
         mBitmap = bitmap
-        mRenderPositionX=0
-        mRenderPositionY=0
+        mMatrix.reset()
         fitBitmapToView(bitmap,true)
         snapToCropRect()
-        updateRects()
-    }
-
-    /**
-     * Calculates values for mSourceRect and mDestinationRect used to draw the view
-     */
-    private fun updateRects() {
-        val bm = mBitmap ?: return
-        val scaledWidth = (bm.width * mScaleFactor).roundToInt()
-        val scaledHeight = (bm.height * mScaleFactor).roundToInt()
-        mSourceRect.set(0,0,bm.width,bm.height)
-        mDestinationRect.set(mRenderPositionX,mRenderPositionY,scaledWidth+mRenderPositionX,scaledHeight+mRenderPositionY)
-        this.invalidate()
     }
 
     /**
@@ -286,57 +250,40 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
     private fun snapToCropRect() {
         val bm = mBitmap ?: return
 
-        val bmScaledWidth = bm.width * mScaleFactor
-        val bmScaledHeight = bm.height * mScaleFactor
-
-        if(mRenderPositionX+bmScaledWidth<mCropRect.right) {
-            mRenderPositionX=(mCropRect.right-bmScaledWidth).toInt()
+        val bmRect = RectF(0f,0f,bm.width.toFloat(),bm.height.toFloat())
+        val tempRect = RectF()
+        mMatrix.mapRect(tempRect,bmRect)
+        if(tempRect.width()<mCropRect.width().toFloat() || tempRect.height()<mCropRect.height().toFloat()) {
+            val dW = bm.width.toFloat() / mCropRect.width().toFloat()
+            val dH = bm.height.toFloat() / mCropRect.height().toFloat()
+            val sF = if(dW < dH) mCropRect.width().toFloat()/tempRect.width() else mCropRect.height().toFloat()/tempRect.height()
+            mMatrix.postScale(sF,sF)
+            mMatrix.mapRect(tempRect,bmRect)
         }
 
-        if(mRenderPositionY+bmScaledHeight<mCropRect.bottom) {
-            mRenderPositionY=(mCropRect.bottom-bmScaledHeight).toInt()
+        if(tempRect.top>mCropRect.top.toFloat()) {
+            val dY = mCropRect.top.toFloat()-tempRect.top
+            mMatrix.postTranslate(0f,dY)
+            mMatrix.mapRect(tempRect,bmRect)
+        }
+        if(tempRect.left>mCropRect.left.toFloat()) {
+            val dX = mCropRect.left.toFloat()-tempRect.left
+            mMatrix.postTranslate(dX,0f)
+            mMatrix.mapRect(tempRect,bmRect)
+        }
+        if(tempRect.bottom<mCropRect.bottom.toFloat()) {
+            val dY = mCropRect.bottom.toFloat()-tempRect.bottom
+            mMatrix.postTranslate(0f,dY)
+            mMatrix.mapRect(tempRect,bmRect)
+        }
+        if(tempRect.right<mCropRect.right.toFloat()) {
+            val dX = mCropRect.right.toFloat()-tempRect.right
+            mMatrix.postTranslate(dX,0f)
+            mMatrix.mapRect(tempRect,bmRect)
         }
 
-        if(mRenderPositionX>mCropRect.left) {
-            mRenderPositionX=mCropRect.left
-        }
-
-        if(mRenderPositionY>mCropRect.top) {
-            mRenderPositionY=mCropRect.top
-        }
     }
 
-    /**
-     * Sets the scalefactor of the image
-     * @param factor the desirec scalefactor.
-     * 1 -> No Scaling
-     * >1 -> Zoom in
-     * <1 -> Zoom out
-     * ignored if the factor is < 0.01
-     */
-    private fun setScaleFactor(factor : Float) {
-        if(factor<0.01f)
-            return
-        val bm = mBitmap ?: return
-
-        val oldWidth = bm.width * mScaleFactor
-        val oldHeight = bm.height * mScaleFactor
-
-        mScaleFactor = when {
-            bm.width * factor < mCropRect.width() -> mCropRect.width()/bm.width.toFloat()
-            bm.height * factor < mCropRect.height() -> mCropRect.height()/bm.height.toFloat()
-            else -> factor
-        }
-
-        val newWidth = bm.width *mScaleFactor
-        val newHeight = bm.height*mScaleFactor
-
-        mRenderPositionX+=((oldWidth-newWidth)/2f).roundToInt()
-        mRenderPositionY+=((oldHeight-newHeight)/2f).roundToInt()
-
-        snapToCropRect()
-        updateRects()
-    }
 
     /**
      * Sets the scale factor for the image to fit the screen
@@ -353,7 +300,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
         } else {
             height/bm.height.toFloat()
         }
+        mMatrix.setScale(mScaleFactor,mScaleFactor)
     }
+
 
     /**
      * handels touchscreen events
@@ -368,8 +317,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
             return true
         }
 
-        val x = event.rawX.toInt()
-        val y = event.rawY.toInt()
+        val x = event.rawX
+        val y = event.rawY
+
 
         return when(event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -382,13 +332,11 @@ internal class CandyCropWindowView @JvmOverloads constructor(context : Context, 
             MotionEvent.ACTION_MOVE -> {
                 //move the image according to finger position
                 if(mImageMoving) {
-                    mRenderPositionX += x - mXTouch
-                    mRenderPositionY += y - mYTouch
+                    mMatrix.postTranslate(x-mXTouch,y-mYTouch)
                     mXTouch = x
                     mYTouch = y
                     snapToCropRect()
-                    updateRects()
-
+                    invalidate()
                 } else {
                     mXTouch = x
                     mYTouch = y
