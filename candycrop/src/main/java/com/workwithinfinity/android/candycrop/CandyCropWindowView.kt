@@ -333,6 +333,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         mMatrix.postTranslate(mCropRect.exactCenterX()-imgRect.centerX(),mCropRect.exactCenterY()-imgRect.centerY())
     }
 
+    /** Scales the image to fit in the crop rect
+     * @param bm the bitmap to fit
+     * @param mode how to fit the view
+     * mode=true _> cropfit
+     * mode=false -> complete fit
+     */
     private fun fitBitmapToCrop(bm : Bitmap, mode: Boolean = true) {
         val dh = mCropRect.height() / bm.height.toFloat()
         val dw = mCropRect.width() / bm.width.toFloat()
@@ -345,7 +351,6 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         val imgRect = RectF(0f,0f,bm.width.toFloat(),bm.height.toFloat())
         mMatrix.mapRect(imgRect)
         mMatrix.postTranslate(mCropRect.exactCenterX()-imgRect.centerX(),mCropRect.exactCenterY()-imgRect.centerY())
-
     }
 
 
