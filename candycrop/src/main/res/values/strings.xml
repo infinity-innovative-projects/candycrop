@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CandyCrop</string>
+    <string name="candycrop_menu_crop">OK</string>
+    <string name="lbl_ok">OK</string>
+    <string name="lbl_cancel">Cancel</string>
+    <string name="move_and_scale">Bewegen und Skalieren</string>
+</resources>
