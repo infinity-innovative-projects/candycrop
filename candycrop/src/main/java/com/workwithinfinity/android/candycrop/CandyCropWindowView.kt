@@ -55,12 +55,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     private var mCropSize: Float = 0.9f
     /** stores if the view is working in the background */
     private var mIsLoading: Boolean = false
-    /** stores if the rect should be drawn */
-    private var mDrawRect: Boolean = true
+    /** stores if the border should be drawn */
+    private var mDrawBorder: Boolean = true
     /** Matrix used to move and scale the picture */
     private val mMatrix: Matrix = Matrix()
     /** Maximum possible scale factor*/
     private val MAX_SCALE_FACTOR = 30f
+    /** The shape of the overlay **/
+    private var mOverlayStyle : OverlayStyle = OverlayStyle.RECT
 
 
     /**
@@ -114,8 +116,13 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         }
         if (obm != null) {
             canvas.drawBitmap(obm, 0f, 0f, null)
-            if (mDrawRect) {
-                canvas.drawRect(mCropRect, mPaintCropRect)
+            if (mDrawBorder) {
+                when(mOverlayStyle) {
+                    OverlayStyle.CIRCLE -> canvas.drawCircle(mCropRect.exactCenterX(),mCropRect.exactCenterY(),mCropRect.height().toFloat()/2f,mPaintCropRect)
+                    OverlayStyle.RECT -> canvas.drawRect(mCropRect, mPaintCropRect)
+
+                }
+
             }
         }
         if (mIsLoading) {
@@ -135,10 +142,10 @@ internal class CandyCropWindowView @JvmOverloads constructor(
 
     /**
      * Sets if the rect should be drawn
-     * @param drawRect true for draw else false
+     * @param drawBorder true for draw else false
      */
-    fun setDrawRect(drawRect: Boolean) {
-        mDrawRect = drawRect
+    fun setDrawBorder(drawBorder: Boolean) {
+        mDrawBorder = drawBorder
     }
 
     /**
@@ -161,6 +168,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      */
     fun setOverlayColor(@ColorInt color: Int) {
         mOverlayColor = color
+    }
+
+    /**
+     * sets the shape of the overlay
+     * @param style the desired shape
+     */
+    fun setOverlayStyle(style : OverlayStyle) {
+        mOverlayStyle = style
     }
 
     /**
@@ -240,7 +255,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         val bm = Bitmap.createBitmap(width, height, conf)
         val canvas = Canvas(bm)
         canvas.drawColor(mOverlayColor)
-        canvas.drawRect(mCropRect, mPaintDelete)
+        when(mOverlayStyle) {
+            OverlayStyle.RECT -> canvas.drawRect(mCropRect, mPaintDelete)
+            OverlayStyle.CIRCLE -> {
+                canvas.drawCircle(mCropRect.exactCenterX(),mCropRect.exactCenterY(),mCropRect.height().toFloat()/2f,mPaintDelete)
+            }
+        }
         mOverlayBitmap = bm
     }
 
