@@ -13,7 +13,7 @@ import kotlinx.android.parcel.Parcelize
  * @param resultUri Uri where the result will be saved
  * @param ratioX Aspect ratio of the x dimension
  * @param ratioY Aspect ratio of the y dimension
- * @param overlayAlpha Alpha of the overlay
+ * @param overlayColor Alpha of the overlay
  * @param cropSize size of the cropping window
  * @param resultWidth Width of the final image
  * @param resultHeight Height of the final image
@@ -22,6 +22,13 @@ import kotlinx.android.parcel.Parcelize
  * @param showButtonNegative show the negative button
  * @param buttonTextColor color of the positive and negative button
  * @param rotation rotation of the loaded image in degree
+ * @param positiveText the text of the confirm button
+ * @param negativeText the text of the cancel button
+ * @param labelText the text displayed on top
+ * @param drawBorder if the border of the overlay should be drawn
+ * @param overlayStyle the style of the overlay. Supports RECT and CIRCLE
+ * @param quality the compression quality when saving as jpeg
+ * @param format the compression format to save the picture
  */
 @Parcelize
 data class CandyCropOptions(var useToolbar : Boolean = true,
@@ -40,8 +47,11 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             var positiveText : String = "",
                             var negativeText : String = "",
                             var labelText : String = "",
-                            var drawRect : Boolean = true,
+                            var drawBorder : Boolean = true,
+                            var overlayStyle : OverlayStyle = OverlayStyle.RECT,
                             var quality : Int = 95,
                             var format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
 ) : Parcelable
+
+enum class OverlayStyle { RECT, CIRCLE }

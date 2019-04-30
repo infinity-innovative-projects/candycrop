@@ -55,7 +55,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
             val aY = at.getInteger(R.styleable.CandyCropView_crop_aspect_ratio_y,1)
             mCropView.setAspectRatio(aX,aY)
             mCropView.setOverlayColor(at.getColor(R.styleable.CandyCropView_overlay_color,Color.argb(150,0,0,0)))
-            mCropView.setDrawRect(at.getBoolean(R.styleable.CandyCropView_draw_rect,true))
+            mCropView.setDrawBorder(at.getBoolean(R.styleable.CandyCropView_draw_border,true))
             at.recycle()
         }
     }
@@ -76,11 +76,11 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
         mCropView.setOverlayColor(color)
     }
     /**
-     * Sets if the rect should be drawn
-     * @param drawRect true for draw else false
+     * Sets if the border should be drawn
+     * @param drawBorder true for draw else false
      */
-    fun setDrawRect(drawRect : Boolean) {
-        mCropView.setDrawRect(drawRect)
+    fun setDrawBorder(drawBorder : Boolean) {
+        mCropView.setDrawBorder(drawBorder)
     }
 
     /**
@@ -99,6 +99,14 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      */
     fun setFormat(format : Bitmap.CompressFormat) {
         mResultFormat = format
+    }
+
+    /**
+     * Sets the style of the overlay
+     * @param style the desired style (RECT | CIRCLE)
+     */
+    fun setOverlayStyle(style : OverlayStyle) {
+        mCropView.setOverlayStyle(style);
     }
 
     /**

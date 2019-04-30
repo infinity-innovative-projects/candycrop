@@ -146,9 +146,10 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .setPositiveText("Auswählen")
             .setNegativeText("Abbrechen")
             .setLabelText("Bewegen und Skalieren")
-            .setDrawRect(false)
+            .setDrawBorder(true)
             .setResultFormat(Bitmap.CompressFormat.JPEG)
             .setResultQuality(50)
+            .setOverlayStyle(OverlayStyle.CIRCLE)
             .start(this)
     }
 

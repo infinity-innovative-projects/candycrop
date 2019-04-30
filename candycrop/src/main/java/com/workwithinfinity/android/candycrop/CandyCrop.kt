@@ -131,6 +131,17 @@ class CandyCrop {
             }
 
             /**
+             * Sets the style of the overlay
+             * possible styles are RECT and CIRCLE
+             * @param style the desired style
+             * @return the builder itself
+             */
+            fun setOverlayStyle(style : OverlayStyle) : ActivityBuilder {
+                mOptions.overlayStyle = style
+                return this
+            }
+
+            /**
              * Sets the Uri where the result is saved to
              * @param resultUri the uri
              * @return the builder itself
@@ -206,11 +217,11 @@ class CandyCrop {
 
             /**
              * Sets if the rect should be drawn
-             * @param drawRect if the rect should be drawn
+             * @param drawBorder if the rect should be drawn
              * @return the builder itself
              */
-            fun setDrawRect(drawRect : Boolean) : ActivityBuilder {
-                mOptions.drawRect = drawRect
+            fun setDrawBorder(drawBorder : Boolean) : ActivityBuilder {
+                mOptions.drawBorder = drawBorder
                 return this
             }
 
