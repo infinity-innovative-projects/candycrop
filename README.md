@@ -33,7 +33,7 @@ allprojects {
 
 ```
 dependencies {
-  implementation 'com.github.infinity-innovative-projects:candycrop:v1.0.0'
+  implementation 'com.github.infinity-innovative-projects:candycrop:v1.0.x'
 }
 ```
 ##### Maven:
@@ -41,7 +41,7 @@ dependencies {
 <dependency>
   <groupId>com.github.infinity-innovative-projects</groupId>
   <artifactId>candycrop</artifactId>
-  <version>v1.0.0</version>
+  <version>v1.0.x</version>
 </dependency>
 ```
 ### Step 3. Add permissions to your manifest
@@ -60,11 +60,13 @@ Use the Activity with the ```CandyCrop.Builder```
 //For activity
 CandyCrop.Builder.activity(sourceUri)
   .setResultUri(destinationUri) //Set the uri where the result should be saved
+  //set other options here (see Customization)
   .start(requireContext())
 
 //For fragment
 CandyCrop.Builder.activity(sourceUri)
   .setResultUri(destinationUri) //Set the uri where the result should be saved
+  //set other options here (see Customization)
   .start(requireContext(),this)
 ```
 Handle the result in the ```onActivityResult``` callback
@@ -138,7 +140,8 @@ CandyCrop.Builder.activity(uri)
   .setOverlayColor(Color.argb(150,0,0,0)) //Sets the color of the overlay
   .setCropRatio(1,1) //Sets the aspect ratio of the cropping section
   .setCropWindowSize(0.9f) //Sets the size of the cropping section. 1=Full screen, 0.5=Half screen
-  .setDrawRect(false) //Sets if the border of the cropping section is visible
+  .setDrawBorder(false) //Sets if the border of the cropping section is visible
+  .setOverlayStyle(OverlayStyle.RECT)
   .start(this)
 ```
 ### Customize the View
@@ -153,7 +156,7 @@ Some properties can be set in the xml layout
   app:crop_size="0.8" //Sets the size of the cropping section. 1=full view, 0.5=Half view
   app:crop_aspect_ratio_x="1" //Sets the aspect ratio of the cropping section for the x dimension
   app:crop_aspect_ratio_y="1" //Sets the aspect ratio of the cropping section for the y dimension
-  app:draw_rect="true" //Sets if the border of the cropping section is visible
+  app:draw_border="true" //Sets if the border of the cropping section is visible
   />
 ```
 Or use the setters of the ```CandyCropView``` to customize the view
@@ -166,9 +169,9 @@ with(candyCropView) {
   setBgColor(Color.BLACK) //Sets the background color of the view
   setOverlayColor(Color.argb(150,0,0,0)) //Sets the color of the overlay
   setAspectRatio(1,1) //Sets the aspect ratio of the cropping section
-  setCropSize(mOptions.cropSize) //Sets the size of the cropping section. 1=Full screen, 0.5=Half screen
-  setDrawRect(mOptions.drawRect) //Sets if the border of the cropping section is visible
-  setInitialRotation(mOptions.rotation) //Sets the initial rotation of the loaded image. Must be 0, 90, 180 or 270
+  setCropSize(0.8) //Sets the size of the cropping section. 1=Full screen, 0.5=Half screen
+  setDrawBorder(true) //Sets if the border of the cropping section is visible
+  setInitialRotation(90) //Sets the initial rotation of the loaded image. Must be 0, 90, 180 or 270
 }
 ```
 ## Changelog
