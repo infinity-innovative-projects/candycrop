@@ -5,8 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.AsyncTask
-import android.support.annotation.ColorInt
-import android.support.constraint.ConstraintLayout
+import androidx.annotation.ColorInt
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ProgressBar

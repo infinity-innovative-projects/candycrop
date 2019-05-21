@@ -3,7 +3,7 @@ package com.workwithinfinity.android.candycrop
 
 import android.content.Context
 import android.graphics.*
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.*
 import kotlin.math.roundToInt

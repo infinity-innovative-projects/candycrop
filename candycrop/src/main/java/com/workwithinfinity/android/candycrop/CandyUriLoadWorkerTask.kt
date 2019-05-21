@@ -3,7 +3,7 @@ package com.workwithinfinity.android.candycrop
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.support.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.opengl.GLES10
 import android.os.AsyncTask
@@ -25,8 +25,9 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
     override fun doInBackground(vararg params: Any?): UriLoadResult {
         val bm = MediaStore.Images.Media.getBitmap(view.get()?.context?.contentResolver,uri)
         val exif = getExifData(view.get()?.context,uri)
-        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL)
-        val exifRotation = when(orientation) {
+        val exifRotation = when(exif?.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL)) {
             ExifInterface.ORIENTATION_ROTATE_90 -> 90f
             ExifInterface.ORIENTATION_ROTATE_180 -> 180f
             ExifInterface.ORIENTATION_ROTATE_270 -> 270f

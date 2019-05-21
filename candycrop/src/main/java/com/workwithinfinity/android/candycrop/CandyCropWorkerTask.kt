@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.net.Uri
 import android.os.AsyncTask
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.util.Log
 import java.io.OutputStream
 import java.lang.ref.WeakReference
