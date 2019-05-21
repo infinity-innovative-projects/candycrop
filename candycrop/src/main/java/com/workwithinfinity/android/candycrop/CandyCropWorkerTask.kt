@@ -5,7 +5,6 @@ import android.graphics.*
 import android.net.Uri
 import android.os.AsyncTask
 import androidx.annotation.ColorInt
-import android.util.Log
 import java.io.OutputStream
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
@@ -86,7 +85,10 @@ class CandyCropWorkerTask(private val source : Bitmap,
         } else {
             croppedBitmap
         }
-        //croppedBitmap.recycle()
+        if(finalBitmap != croppedBitmap) {
+            croppedBitmap.recycle()
+        }
+
         val context = view.get()?.context
         if(destUri!=null && context!=null) {
             saveBitmapToUri(finalBitmap,context,destUri,format,quality)
@@ -94,6 +96,8 @@ class CandyCropWorkerTask(private val source : Bitmap,
 
         return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri)
     }
+
+
 
     /**
      * Executed after cropping the image.
