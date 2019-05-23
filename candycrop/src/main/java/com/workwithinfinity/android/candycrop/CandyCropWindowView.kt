@@ -3,7 +3,7 @@ package com.workwithinfinity.android.candycrop
 
 import android.content.Context
 import android.graphics.*
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.*
 import kotlin.math.roundToInt
@@ -34,6 +34,10 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         color = Color.BLACK
         style = Paint.Style.STROKE
         strokeWidth = 3f
+    }
+    private val mPaintOverlay : Paint = Paint().apply {
+        color = mOverlayColor
+        style = Paint.Style.FILL
     }
     /** stores the X position of the touch event */
     private var mXTouch: Float = 0f
@@ -97,7 +101,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             }
 
             mMatrix.postScale(detector.scaleFactor, detector.scaleFactor, detector.focusX, detector.focusY)
-            snapToCropRect()
+            snapToCropRect(detector.focusX,detector.focusY)
             invalidate()
             return true
         }
@@ -115,14 +119,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             canvas.drawBitmap(bm, mMatrix, null)
         }
         if (obm != null) {
-            canvas.drawBitmap(obm, 0f, 0f, null)
+            canvas.drawBitmap(obm, 0f, 0f, mPaintOverlay)
             if (mDrawBorder) {
                 when(mOverlayStyle) {
                     OverlayStyle.CIRCLE -> canvas.drawCircle(mCropRect.exactCenterX(),mCropRect.exactCenterY(),mCropRect.height().toFloat()/2f,mPaintCropRect)
                     OverlayStyle.RECT -> canvas.drawRect(mCropRect, mPaintCropRect)
-
                 }
-
             }
         }
         if (mIsLoading) {
@@ -168,6 +170,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      */
     fun setOverlayColor(@ColorInt color: Int) {
         mOverlayColor = color
+        mPaintOverlay.color = mOverlayColor
     }
 
     /**
@@ -176,6 +179,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      */
     fun setOverlayStyle(style : OverlayStyle) {
         mOverlayStyle = style
+        if(mOverlayBitmap!=null) {
+            createOverlayBitmap()
+        }
     }
 
     /**
@@ -251,10 +257,11 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      * Generates the overlay bitmap
      */
     private fun createOverlayBitmap() {
-        val conf = Bitmap.Config.ARGB_8888
+        val conf = Bitmap.Config.ALPHA_8
         val bm = Bitmap.createBitmap(width, height, conf)
         val canvas = Canvas(bm)
-        canvas.drawColor(mOverlayColor)
+        canvas.drawColor(Color.BLACK)
+        //canvas.drawColor(mOverlayColor)
         when(mOverlayStyle) {
             OverlayStyle.RECT -> canvas.drawRect(mCropRect, mPaintDelete)
             OverlayStyle.CIRCLE -> {
@@ -294,7 +301,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     /**
      * Alligns the picture to the cropping rect if it would be out of bounds
      */
-    private fun snapToCropRect() {
+    private fun snapToCropRect(fx : Float? = null, fy : Float? = null) {
         val bm = mBitmap ?: return
 
         val bmRect = RectF(0f, 0f, bm.width.toFloat(), bm.height.toFloat())
@@ -305,7 +312,11 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             val dH = bm.height.toFloat() / mCropRect.height().toFloat()
             val sF =
                 if (dW < dH) mCropRect.width().toFloat() / tempRect.width() else mCropRect.height().toFloat() / tempRect.height()
-            mMatrix.postScale(sF, sF)
+            if(fx!=null && fy!=null) {
+                mMatrix.postScale(sF, sF,fx,fy)
+            } else {
+                mMatrix.postScale(sF, sF,tempRect.centerX(),tempRect.centerY())
+            }
             mMatrix.mapRect(tempRect, bmRect)
         }
 
@@ -313,18 +324,16 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             val dY = mCropRect.top.toFloat() - tempRect.top
             mMatrix.postTranslate(0f, dY)
             mMatrix.mapRect(tempRect, bmRect)
+        } else if (tempRect.bottom < mCropRect.bottom.toFloat()) {
+            val dY = mCropRect.bottom.toFloat() - tempRect.bottom
+            mMatrix.postTranslate(0f, dY)
+            mMatrix.mapRect(tempRect, bmRect)
         }
         if (tempRect.left > mCropRect.left.toFloat()) {
             val dX = mCropRect.left.toFloat() - tempRect.left
             mMatrix.postTranslate(dX, 0f)
             mMatrix.mapRect(tempRect, bmRect)
-        }
-        if (tempRect.bottom < mCropRect.bottom.toFloat()) {
-            val dY = mCropRect.bottom.toFloat() - tempRect.bottom
-            mMatrix.postTranslate(0f, dY)
-            mMatrix.mapRect(tempRect, bmRect)
-        }
-        if (tempRect.right < mCropRect.right.toFloat()) {
+        }else if (tempRect.right < mCropRect.right.toFloat()) {
             val dX = mCropRect.right.toFloat() - tempRect.right
             mMatrix.postTranslate(dX, 0f)
             mMatrix.mapRect(tempRect, bmRect)
@@ -381,6 +390,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
+        if(mIsLoading) {
+            return true
+        }
         scaleGestureDetector.onTouchEvent(event)
         //if scaling is in progress, don't move the picture
         if (scaleGestureDetector.isInProgress) {
