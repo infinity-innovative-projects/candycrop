@@ -69,6 +69,20 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     }
 
     /**
+     * Rotates the image 90 degree clockwise
+     */
+    fun rotateForward() {
+        mCropView.rotateForward()
+    }
+
+    /**
+     * Rotates the image 90 degree counterclockwise
+     */
+    fun rotateBackward() {
+        mCropView.rotateBackwards()
+    }
+
+    /**
      * sets the alpha of the overlay
      * @param color the desired color of the overlay
      */

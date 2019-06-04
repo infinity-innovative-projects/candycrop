@@ -23,15 +23,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btn_select_src" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
             app:bg_color="@android:color/white"/>
-    <Button
-            android:text="Select Source"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_select_src"
-            app:layout_constraintTop_toBottomOf="@+id/candyCropView"
-            app:layout_constraintBottom_toTopOf="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/btn_crop"
-            android:layout_marginTop="16dp" android:layout_marginBottom="16dp"/>
+
     <TextView
             android:text="Or you can launch it as an activity:"
             android:layout_width="wrap_content"
@@ -54,7 +46,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_crop"
-            app:layout_constraintBaseline_toBaselineOf="@+id/btn_select_src"
             app:layout_constraintStart_toEndOf="@+id/btn_select_src" app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="@id/buttonRotateLeft" android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_select_src"/>
+
+    <Button
+            android:text="Source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_select_src"
+            app:layout_constraintTop_toBottomOf="@+id/candyCropView"
+            app:layout_constraintBottom_toTopOf="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/btn_crop"
+            android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:textSize="12sp"
+            android:layout_marginStart="8dp"/>
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:baseline="30dp"
+            app:layout_constraintStart_toEndOf="@+id/btn_crop"
+            app:layout_constraintEnd_toStartOf="@+id/buttonRotateRight"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_select_src"
+            android:id="@+id/buttonRotateLeft" android:scaleType="center"
+            android:src="@drawable/ic_baseline_rotate_left_24px"/>
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:baseline="30dp"
+            android:src="@drawable/ic_baseline_rotate_right_24px"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_select_src"
+            app:layout_constraintStart_toEndOf="@+id/buttonRotateLeft"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/buttonRotateRight" android:scaleType="centerCrop" android:layout_marginEnd="8dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

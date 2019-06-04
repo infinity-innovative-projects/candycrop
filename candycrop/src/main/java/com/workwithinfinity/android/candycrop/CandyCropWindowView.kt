@@ -151,6 +151,28 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     }
 
     /**
+     * Rotates the image 90 degree clockwise
+     */
+    fun rotateForward() {
+        if(mIsLoading)
+            return
+        mMatrix.preRotate(90f)
+        snapToCropRect()
+        invalidate()
+    }
+
+    /**
+     * Rotates the image 90 degree counterclockwise
+     */
+    fun rotateBackwards() {
+        if(mIsLoading)
+            return
+        mMatrix.preRotate(-90f)
+        snapToCropRect()
+        invalidate()
+    }
+
+    /**
      * Sets the background color of the view
      * @param color the desired color as ColorInt
      */
@@ -308,8 +330,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         val tempRect = RectF()
         mMatrix.mapRect(tempRect, bmRect)
         if (tempRect.width() < mCropRect.width().toFloat() || tempRect.height() < mCropRect.height().toFloat()) {
-            val dW = bm.width.toFloat() / mCropRect.width().toFloat()
-            val dH = bm.height.toFloat() / mCropRect.height().toFloat()
+
+            val dW = tempRect.width() / mCropRect.width().toFloat()
+            val dH = tempRect.height() / mCropRect.height().toFloat()
             val sF =
                 if (dW < dH) mCropRect.width().toFloat() / tempRect.width() else mCropRect.height().toFloat() / tempRect.height()
             if(fx!=null && fy!=null) {
