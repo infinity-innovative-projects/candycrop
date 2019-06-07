@@ -236,6 +236,16 @@ class CandyCrop {
             }
 
             /**
+             * Sets if gesture rotation is enabled
+             * @param allow true for enabled
+             * @return the builder itself
+             */
+            fun setAllowRotation(allow : Boolean) : ActivityBuilder {
+                mOptions.allowRotation = allow
+                return this
+            }
+
+            /**
              * Sets the desired quality of the saved picture
              * @param quality the desired quality. Ignored if not between 0 and 100
              * @return the builder itself

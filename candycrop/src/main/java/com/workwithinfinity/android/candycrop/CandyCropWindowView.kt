@@ -16,7 +16,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyles: Int = 0
-) : View(context, attrs, defStyles) {
+) : View(context, attrs, defStyles), RotationGestureDetector.OnRotationGestureListener {
     /** bitmap storing the source image */
     private var mBitmap: Bitmap? = null
     /** Rect for the cropping window */
@@ -67,6 +67,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     private val MAX_SCALE_FACTOR = 30f
     /** The shape of the overlay **/
     private var mOverlayStyle : OverlayStyle = OverlayStyle.RECT
+
+    private var mRotationDetector : RotationGestureDetector = RotationGestureDetector(this)
+    /** Flag that signals if the picture has been rotated during the current gesture */
+    private var mRotatedFlag : Boolean = false
+    /** stores if rotation with gesture is enabled */
+    private var mAllowRotation : Boolean = false
 
 
     /**
@@ -150,15 +156,38 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         mDrawBorder = drawBorder
     }
 
+
+    /**
+     * Callback for rotation gestures. rotates the picture if the angle surpasses a value
+     * @param rotationDetector the rotationDetector
+     */
+    override fun onRotation(rotationDetector: RotationGestureDetector) {
+        if(!mRotatedFlag && rotationDetector.angle > 30f) {
+            mRotatedFlag = true
+            rotateBackwards()
+        } else if(!mRotatedFlag && rotationDetector.angle < -30f) {
+            mRotatedFlag = true
+            rotateForward()
+        }
+    }
+
     /**
      * Rotates the image 90 degree clockwise
      */
     fun rotateForward() {
         if(mIsLoading)
             return
-        mMatrix.preRotate(90f)
+        mMatrix.postRotate(90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
         snapToCropRect()
         invalidate()
+    }
+
+    /**
+     * Sets if gesture rotation is enabled
+     * @param allow true for enabled
+     */
+    fun setAllowRotation(allow : Boolean) {
+        mAllowRotation = allow
     }
 
     /**
@@ -167,7 +196,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     fun rotateBackwards() {
         if(mIsLoading)
             return
-        mMatrix.preRotate(-90f)
+        mMatrix.postRotate(-90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
         snapToCropRect()
         invalidate()
     }
@@ -420,6 +449,16 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         //if scaling is in progress, don't move the picture
         if (scaleGestureDetector.isInProgress) {
             return true
+        }
+
+        if(mAllowRotation) {
+            val rotating = mRotationDetector.onTouchEvent(event)
+            if(rotating) {
+                //stop handling touch events when user is rotating
+                return true
+            } else {
+                mRotatedFlag = false
+            }
         }
 
         val x = event.rawX

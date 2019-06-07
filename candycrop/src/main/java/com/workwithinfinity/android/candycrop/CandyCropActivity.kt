@@ -5,11 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -44,6 +46,7 @@ class CandyCropActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.candy_crop_activity) //inflate the view
+
 
         //save the different views
         mCropView = findViewById(R.id.cropping_view)
@@ -95,6 +98,7 @@ class CandyCropActivity : AppCompatActivity(),
             setQuality(mOptions.quality)
             setFormat(mOptions.format)
             setOverlayStyle(mOptions.overlayStyle)
+            setAllowRotation(mOptions.allowRotation)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {
@@ -127,6 +131,7 @@ class CandyCropActivity : AppCompatActivity(),
             }
         }
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
@@ -161,6 +166,7 @@ class CandyCropActivity : AppCompatActivity(),
         setResult(RESULT_CANCELED)
         finish()
     }
+
 
     /**
      * Save the instance state

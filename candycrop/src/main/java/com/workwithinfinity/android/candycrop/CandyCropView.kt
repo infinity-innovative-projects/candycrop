@@ -83,6 +83,14 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
     }
 
     /**
+     * Sets if gesture rotation is enabled
+     * @param allow true for enabled
+     */
+    fun setAllowRotation(allow : Boolean) {
+        mCropView.setAllowRotation(allow)
+    }
+
+    /**
      * sets the alpha of the overlay
      * @param color the desired color of the overlay
      */

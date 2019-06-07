@@ -132,17 +132,6 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
                 ).toInt().toDouble()
             ).toInt()
         }
-
-        /* old method
-
-        var sampleSize = 1
-        if(width > targetWidth || height > targetHeight) {
-
-            while(width / sampleSize >= targetWidth || height / sampleSize >= targetHeight) {
-                sampleSize *= 2
-            }
-        }
-        */
         return sampleSize
     }
 
