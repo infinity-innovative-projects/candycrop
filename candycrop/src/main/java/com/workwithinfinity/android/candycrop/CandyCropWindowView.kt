@@ -74,6 +74,8 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     /** stores if rotation with gesture is enabled */
     private var mAllowRotation : Boolean = false
 
+    private var mOnInvalidate : (() -> Unit)? = null
+
 
     /**
      * ScaleGestureDetector used to detect scale gestures
@@ -108,7 +110,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
 
             mMatrix.postScale(detector.scaleFactor, detector.scaleFactor, detector.focusX, detector.focusY)
             snapToCropRect(detector.focusX,detector.focusY)
-            invalidate()
+            invalidateViews()
             return true
         }
     })
@@ -179,7 +181,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             return
         mMatrix.postRotate(90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
         snapToCropRect()
-        invalidate()
+        invalidateViews()
+    }
+
+    /**
+     * Sets the callback for invalidate calls
+     */
+    fun setOnInvalidate(onInvalidate : () -> Unit) {
+        mOnInvalidate = onInvalidate
     }
 
     /**
@@ -198,7 +207,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             return
         mMatrix.postRotate(-90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
         snapToCropRect()
-        invalidate()
+        invalidateViews()
     }
 
     /**
@@ -256,7 +265,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      */
     fun setLoading(isLoading: Boolean) {
         mIsLoading = isLoading
-        invalidate()
+        invalidateViews()
     }
 
 
@@ -346,7 +355,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         //fitBitmapToView(bitmap, true)
         fitBitmapToCrop(bitmap,true)
         snapToCropRect()
-        invalidate()
+        invalidateViews()
     }
 
     /**
@@ -434,6 +443,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         mMatrix.postTranslate(mCropRect.exactCenterX()-imgRect.centerX(),mCropRect.exactCenterY()-imgRect.centerY())
     }
 
+    /**
+     * Invalidates this and the parent view
+     */
+    private fun invalidateViews() {
+        invalidate()
+        mOnInvalidate?.invoke()
+    }
+
 
     /**
      * handels touchscreen events
@@ -479,7 +496,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
                     mXTouch = x
                     mYTouch = y
                     snapToCropRect()
-                    invalidate()
+                    invalidateViews()
                 } else {
                     mXTouch = x
                     mYTouch = y

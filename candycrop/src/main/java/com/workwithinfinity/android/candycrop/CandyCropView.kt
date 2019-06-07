@@ -58,6 +58,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
             mCropView.setDrawBorder(at.getBoolean(R.styleable.CandyCropView_draw_border,true))
             at.recycle()
         }
+        mCropView.setOnInvalidate { this.invalidate() }
     }
 
     /**
