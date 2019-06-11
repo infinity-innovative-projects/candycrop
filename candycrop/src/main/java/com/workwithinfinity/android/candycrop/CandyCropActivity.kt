@@ -5,13 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -98,7 +96,8 @@ class CandyCropActivity : AppCompatActivity(),
             setQuality(mOptions.quality)
             setFormat(mOptions.format)
             setOverlayStyle(mOptions.overlayStyle)
-            setAllowRotation(mOptions.allowRotation)
+            setAllowGestureRotation(mOptions.allowGestureRotation)
+            setUseAnimation(mOptions.useAnimation)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {

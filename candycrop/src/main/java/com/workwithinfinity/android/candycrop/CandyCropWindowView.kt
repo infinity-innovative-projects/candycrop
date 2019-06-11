@@ -1,10 +1,13 @@
 package com.workwithinfinity.android.candycrop
 
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import androidx.annotation.ColorInt
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import kotlin.math.roundToInt
 
@@ -67,21 +70,65 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     private val MAX_SCALE_FACTOR = 30f
     /** The shape of the overlay **/
     private var mOverlayStyle : OverlayStyle = OverlayStyle.RECT
-
+    /** Gesture detector for rotation gestures */
     private var mRotationDetector : RotationGestureDetector = RotationGestureDetector(this)
     /** Flag that signals if the picture has been rotated during the current gesture */
     private var mRotatedFlag : Boolean = false
     /** stores if rotation with gesture is enabled */
-    private var mAllowRotation : Boolean = false
-
+    private var mAllowGestureRotation : Boolean = false
+    /** callback to call when invalidation of views is needed */
     private var mOnInvalidate : (() -> Unit)? = null
+    /** animator for "fit to croprect" animation*/
+    private val mMatrixAnimator : ValueAnimator = ValueAnimator.ofFloat(0f,1f)
+    /** matrix that stores scale/rotation/translation unbound to the crop rect  */
+    private val mAnimationMatrix = Matrix()
+    /** Matrix that stores the interpolation between mMatrix and mAnimationMatrix */
+    private val mInterpolateMatrix = Matrix()
+    /** Flag that signals if the user is interacting with the picture right now */
+    private var mInteracting : Boolean = false
+    /** Flag that signals if the user is rotating the picture right now */
+    private var mRotating : Boolean = false
+    /** Flag that stores if animation should be used */
+    private var mUseAnimation : Boolean = true
+
+    init {
+        mMatrixAnimator.duration = 150
+        mMatrixAnimator.addListener(object : Animator.AnimatorListener {
+
+            override fun onAnimationEnd(animation: Animator) {
+                mAnimationMatrix.set(mMatrix)
+                mInterpolateMatrix.set(mMatrix)
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+               //do nothing
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                mAnimationMatrix.set(mMatrix)
+                mInterpolateMatrix.set(mMatrix)
+            }
+
+            override fun onAnimationStart(animation: Animator) {
+                mInterpolateMatrix.set(mAnimationMatrix)
+            }
+        })
+        mMatrixAnimator.addUpdateListener {
+            animation ->
+            mAnimationMatrix.interpolate(mMatrix,animation.animatedValue as Float,mInterpolateMatrix)
+            invalidateViews()
+
+        }
+    }
 
 
     /**
      * ScaleGestureDetector used to detect scale gestures
      */
     private val scaleGestureDetector = ScaleGestureDetector(context, object :
-        ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        ScaleGestureDetector.OnScaleGestureListener {
+
+
 
         /**
          * Called on the beginning of the scaling process
@@ -90,6 +137,10 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
             mImageMoving = false
             return true
+        }
+
+        override fun onScaleEnd(detector: ScaleGestureDetector) {
+            Log.d("ScaleDetecture","OnScaleEnd")
         }
 
         /**
@@ -109,6 +160,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
             }
 
             mMatrix.postScale(detector.scaleFactor, detector.scaleFactor, detector.focusX, detector.focusY)
+            mAnimationMatrix.postScale(detector.scaleFactor, detector.scaleFactor, detector.focusX, detector.focusY)
             snapToCropRect(detector.focusX,detector.focusY)
             invalidateViews()
             return true
@@ -116,15 +168,28 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     })
 
     /**
+     * Setter for mUseAnimation
+     * @param useAnimation true if animation should be used
+     */
+    fun setUseAnimation(useAnimation : Boolean) {
+        mUseAnimation = useAnimation
+    }
+
+    /**
      * Draws the view
      * @param canvas the canvas to draw on
      */
     override fun onDraw(canvas: Canvas) {
+
         canvas.drawColor(mBackgroundColor)
         val bm = mBitmap
         val obm = mOverlayBitmap
-        if (bm != null) {
-            canvas.drawBitmap(bm, mMatrix, null)
+        if (bm != null && !bm.isRecycled) {
+            when {
+                mMatrixAnimator.isRunning && mUseAnimation -> canvas.drawBitmap(bm,mInterpolateMatrix, null)
+                mInteracting && mUseAnimation -> canvas.drawBitmap(bm,mAnimationMatrix,null)
+                else -> canvas.drawBitmap(bm,mMatrix,null)
+            }
         }
         if (obm != null) {
             canvas.drawBitmap(obm, 0f, 0f, mPaintOverlay)
@@ -164,13 +229,16 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      * @param rotationDetector the rotationDetector
      */
     override fun onRotation(rotationDetector: RotationGestureDetector) {
-        if(!mRotatedFlag && rotationDetector.angle > 30f) {
+        mAnimationMatrix.postRotate(rotationDetector.angleSinceUpdate,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+        if(!mRotatedFlag && rotationDetector.angle > 45f) {
             mRotatedFlag = true
-            rotateBackwards()
-        } else if(!mRotatedFlag && rotationDetector.angle < -30f) {
+            mMatrix.postRotate(-90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+        } else if(!mRotatedFlag && rotationDetector.angle < -45f) {
             mRotatedFlag = true
-            rotateForward()
+            mMatrix.postRotate(90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+            snapToCropRect()
         }
+        invalidateViews()
     }
 
     /**
@@ -180,6 +248,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         if(mIsLoading)
             return
         mMatrix.postRotate(90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+        mMatrixAnimator.start()
         snapToCropRect()
         invalidateViews()
     }
@@ -195,8 +264,8 @@ internal class CandyCropWindowView @JvmOverloads constructor(
      * Sets if gesture rotation is enabled
      * @param allow true for enabled
      */
-    fun setAllowRotation(allow : Boolean) {
-        mAllowRotation = allow
+    fun setAllowGestureRotation(allow : Boolean) {
+        mAllowGestureRotation = allow
     }
 
     /**
@@ -206,6 +275,8 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         if(mIsLoading)
             return
         mMatrix.postRotate(-90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+       // mAnimationMatrix.postRotate(-90f,mCropRect.exactCenterX(),mCropRect.exactCenterY())
+        mMatrixAnimator.start()
         snapToCropRect()
         invalidateViews()
     }
@@ -313,6 +384,19 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         }
     }
 
+    private fun startInteraction() {
+        mInteracting = true
+        mMatrixAnimator.cancel()
+        mAnimationMatrix.set(mMatrix)
+
+    }
+
+    private fun stopInteraction() {
+        mInteracting = false
+        if(mUseAnimation) mMatrixAnimator.start()
+
+    }
+
     /**
      * Generates the overlay bitmap
      */
@@ -354,6 +438,8 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         mMatrix.reset()
         //fitBitmapToView(bitmap, true)
         fitBitmapToCrop(bitmap,true)
+        mAnimationMatrix.set(mMatrix)
+        mInterpolateMatrix.set(mMatrix)
         snapToCropRect()
         invalidateViews()
     }
@@ -445,6 +531,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
 
     /**
      * Invalidates this and the parent view
+     * Needed because CandyCropView won't redraw on some phones when only calling invalidate
      */
     private fun invalidateViews() {
         invalidate()
@@ -462,21 +549,38 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         if(mIsLoading) {
             return true
         }
-        scaleGestureDetector.onTouchEvent(event)
-        //if scaling is in progress, don't move the picture
-        if (scaleGestureDetector.isInProgress) {
-            return true
+
+        when(event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                startInteraction()
+            }
+            MotionEvent.ACTION_UP -> {
+                stopInteraction()
+                mRotating = false
+            }
         }
 
-        if(mAllowRotation) {
+        if((mRotationDetector.angle < 7f && mRotationDetector.angle > -7f) || scaleGestureDetector.isInProgress) {
+            scaleGestureDetector.onTouchEvent(event)
+            //if scaling is in progress, don't move the picture
+            if (scaleGestureDetector.isInProgress) {
+                return true
+            }
+        }
+
+
+        if(mAllowGestureRotation) {
             val rotating = mRotationDetector.onTouchEvent(event)
             if(rotating) {
                 //stop handling touch events when user is rotating
+                mRotating = true
                 return true
             } else {
                 mRotatedFlag = false
             }
         }
+
+        if(mRotating) return true
 
         val x = event.rawX
         val y = event.rawY
@@ -493,6 +597,7 @@ internal class CandyCropWindowView @JvmOverloads constructor(
                 //move the image according to finger position
                 if (mImageMoving) {
                     mMatrix.postTranslate(x - mXTouch, y - mYTouch)
+                    mAnimationMatrix.postTranslate(x - mXTouch, y - mYTouch)
                     mXTouch = x
                     mYTouch = y
                     snapToCropRect()

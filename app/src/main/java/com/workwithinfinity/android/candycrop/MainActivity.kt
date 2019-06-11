@@ -50,7 +50,8 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropView.setResultUri(Uri.fromFile(File(cacheDir,"cropped")))
         cropView.setResultSize(1000,1000)
         cropView.setBackgroundColor(Color.WHITE)
-        cropView.setAllowRotation(true)
+        cropView.setAllowGestureRotation(true)
+        cropView.setUseAnimation(true)
 
 
         selectButton = findViewById(R.id.btn_select_src)
@@ -170,7 +171,8 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .setResultFormat(Bitmap.CompressFormat.JPEG)
             .setResultQuality(50)
             .setOverlayStyle(OverlayStyle.CIRCLE)
-            .setAllowRotation(true)
+            .setAllowGestureRotation(true)
+            .setUseAnimation(true)
             .start(this)
     }
 

@@ -25,9 +25,9 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * @param params ignored
      */
     override fun doInBackground(vararg params: Any?): UriLoadResult {
-       // val bm = MediaStore.Images.Media.getBitmap(view.get()?.context?.contentResolver,uri)
         val (width, height, type) = getImageDimensions(uri)
         val maxSize = GLES10.GL_MAX_TEXTURE_SIZE
+        //Downsample big pictures to preserve memory
         val sampleSize = calculateSampleSize(width,height,maxSize)
         val options = BitmapFactory.Options()
         options.inSampleSize = sampleSize
@@ -53,7 +53,7 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
         }
 
         //images bigger than GL_MAX_TEXTURE_SIZE cant be rendered in the view
-
+        //could be removed, since rescaling huge pictures is done on loading now
         val sizedBm = if(bm.width > maxSize || bm.height > maxSize) {
             val dx = maxSize/bm.width.toFloat()
             val dy = maxSize/bm.height.toFloat()

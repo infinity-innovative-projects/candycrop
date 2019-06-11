@@ -8,6 +8,7 @@ import android.os.AsyncTask
 import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import com.workwithinfinity.android.R
@@ -87,8 +88,16 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      * Sets if gesture rotation is enabled
      * @param allow true for enabled
      */
-    fun setAllowRotation(allow : Boolean) {
-        mCropView.setAllowRotation(allow)
+    fun setAllowGestureRotation(allow : Boolean) {
+        mCropView.setAllowGestureRotation(allow)
+    }
+
+    /**
+     * Sets if animation should be used
+     * @param useAnimation true if animation should be used
+     */
+    fun setUseAnimation(useAnimation : Boolean) {
+        mCropView.setUseAnimation(useAnimation)
     }
 
     /**
@@ -265,6 +274,7 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      * @param uri uri of the source image
      */
     fun setImageUriAsync(uri : Uri) {
+        Log.d("CANDYCROPVIEW", "setImageUriAsync")
         mUri = uri
         val currentTask = mCandyUriLoadWorkerTask?.get()
         currentTask?.cancel(true)

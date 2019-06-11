@@ -1,8 +1,11 @@
 package com.workwithinfinity.android.candycrop
 
+
 import android.view.MotionEvent
 
-
+/**
+ * Gesture detector for rotations
+ */
 class RotationGestureDetector(private val mListener: OnRotationGestureListener) {
     private var fX : Float = 0f
     private var fY: Float = 0f
@@ -10,6 +13,11 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
     private var sY: Float = 0f
     private var ptrID1: Int = 0
     private var ptrID2: Int = 0
+    private var angleBeforeUpdate : Float = 0f
+    /** The angle difference between two onRotation calls */
+    var angleSinceUpdate : Float = 0f
+        private set
+    /** The rotated angle from the start of the gesture */
     var angle: Float = 0f
         private set
 
@@ -24,7 +32,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
                 ptrID1 = event.getPointerId(event.actionIndex)
             }
             MotionEvent.ACTION_POINTER_DOWN -> {
-
+                angleBeforeUpdate = 0f
                 ptrID2 = event.getPointerId(event.actionIndex)
                 sX = event.getX(event.findPointerIndex(ptrID1))
                 sY = event.getY(event.findPointerIndex(ptrID1))
@@ -39,11 +47,19 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
                 val nsY = event.getY(event.findPointerIndex(ptrID1))
 
                 angle = angleBetweenLines(fX, fY, sX, sY, nfX, nfY, nsX, nsY)
+                //ignore small angles to prevent unwanted rotation
+                if(angle < 5f && angle > -5f) angle=0f
+                angleSinceUpdate = angleBeforeUpdate - angle
                 mListener.onRotation(this)
+                angleBeforeUpdate = angle
+
                 return true
             }
             MotionEvent.ACTION_UP -> ptrID1 = INVALID_POINTER_ID
-            MotionEvent.ACTION_POINTER_UP -> ptrID2 = INVALID_POINTER_ID
+            MotionEvent.ACTION_POINTER_UP ->{
+                ptrID2 = INVALID_POINTER_ID
+                return true
+            }
             MotionEvent.ACTION_CANCEL -> {
                 ptrID1 = INVALID_POINTER_ID
                 ptrID2 = INVALID_POINTER_ID
@@ -51,7 +67,6 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
         }
         return false
     }
-
 
     private fun angleBetweenLines(
         fX: Float,

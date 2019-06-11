@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.ColorInt
-import androidx.fragment.app.Fragment
 import kotlinx.android.parcel.Parcelize
 
 class CandyCrop {
@@ -240,8 +239,18 @@ class CandyCrop {
              * @param allow true for enabled
              * @return the builder itself
              */
-            fun setAllowRotation(allow : Boolean) : ActivityBuilder {
-                mOptions.allowRotation = allow
+            fun setAllowGestureRotation(allow : Boolean) : ActivityBuilder {
+                mOptions.allowGestureRotation = allow
+                return this
+            }
+
+            /**
+             * Sets if animation should be used
+             * @param useAnimation true if animation should be used
+             * @return the builder itself
+             */
+            fun setUseAnimation(useAnimation : Boolean) : ActivityBuilder {
+                mOptions.useAnimation = useAnimation
                 return this
             }
 
