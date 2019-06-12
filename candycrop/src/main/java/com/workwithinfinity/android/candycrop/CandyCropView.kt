@@ -57,6 +57,10 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
             mCropView.setAspectRatio(aX,aY)
             mCropView.setOverlayColor(at.getColor(R.styleable.CandyCropView_overlay_color,Color.argb(150,0,0,0)))
             mCropView.setDrawBorder(at.getBoolean(R.styleable.CandyCropView_draw_border,true))
+            mCropView.setUseAnimation(at.getBoolean(R.styleable.CandyCropView_use_animation,true))
+            mCropView.setAllowGestureRotation(at.getBoolean(R.styleable.CandyCropView_allow_gesture_rotation,false))
+            val circleShape = at.getBoolean(R.styleable.CandyCropView_use_circle_overlay,false)
+            mCropView.setOverlayStyle(if(circleShape) OverlayStyle.CIRCLE else OverlayStyle.RECT)
             at.recycle()
         }
         mCropView.setOnInvalidate { this.invalidate() }
