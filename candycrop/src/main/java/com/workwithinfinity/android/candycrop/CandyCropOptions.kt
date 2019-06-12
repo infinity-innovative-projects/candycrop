@@ -29,6 +29,7 @@ import kotlinx.android.parcel.Parcelize
  * @param overlayStyle the style of the overlay. Supports RECT and CIRCLE
  * @param quality the compression quality when saving as jpeg
  * @param format the compression format to save the picture
+ * @param allowGestureRotation enables gesture rotation when true
  */
 @Parcelize
 data class CandyCropOptions(var useToolbar : Boolean = true,
@@ -50,7 +51,9 @@ data class CandyCropOptions(var useToolbar : Boolean = true,
                             var drawBorder : Boolean = true,
                             var overlayStyle : OverlayStyle = OverlayStyle.RECT,
                             var quality : Int = 95,
-                            var format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+                            var format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+                            var allowGestureRotation : Boolean = false,
+                            var useAnimation : Boolean = true
 
 ) : Parcelable
 

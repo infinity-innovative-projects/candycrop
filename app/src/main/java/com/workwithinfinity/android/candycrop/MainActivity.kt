@@ -12,6 +12,7 @@ import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import com.workwithinfinity.android.R
 import java.io.File
@@ -30,6 +31,10 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
     private lateinit var activitybutton : Button
     /** the selected source uri */
     private var mUri : Uri? = null
+    /** the rotate right button */
+    private lateinit var rotateRightButton : ImageButton
+    /** the rotate left button */
+    private lateinit var rotateLeftButton : ImageButton
 
     /**
      * OnCreate of the Activity
@@ -43,8 +48,10 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropView.setOnCropCompleteListener(this)
         cropView.setOnLoadUriImageCompleteListener(this)
         cropView.setResultUri(Uri.fromFile(File(cacheDir,"cropped")))
-        cropView.setResultSize(1024,1024)
+        cropView.setResultSize(1000,1000)
         cropView.setBackgroundColor(Color.WHITE)
+        cropView.setAllowGestureRotation(true)
+        cropView.setUseAnimation(true)
 
 
         selectButton = findViewById(R.id.btn_select_src)
@@ -60,6 +67,18 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         cropButton.isEnabled = false
         cropButton.setOnClickListener {
             cropView.getCroppedBitmapAsync()
+        }
+
+        rotateRightButton = findViewById(R.id.buttonRotateRight)
+        rotateRightButton.isEnabled = false
+        rotateRightButton.setOnClickListener {
+            cropView.rotateForward()
+        }
+
+        rotateLeftButton = findViewById(R.id.buttonRotateLeft)
+        rotateLeftButton.isEnabled = false
+        rotateLeftButton.setOnClickListener {
+            cropView.rotateBackward()
         }
 
         if(savedInstanceState!=null) {
@@ -98,6 +117,8 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         mUri = uri
         cropButton.isEnabled = true
         activitybutton.isEnabled = true
+        rotateRightButton.isEnabled = true
+        rotateLeftButton.isEnabled = true
     }
 
     /**
@@ -150,6 +171,8 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             .setResultFormat(Bitmap.CompressFormat.JPEG)
             .setResultQuality(50)
             .setOverlayStyle(OverlayStyle.CIRCLE)
+            .setAllowGestureRotation(true)
+            .setUseAnimation(true)
             .start(this)
     }
 

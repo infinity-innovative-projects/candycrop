@@ -115,7 +115,14 @@ cropView.setOnCropCompleteListener(object : CandyCropView.OnCropCompleteListener
   }
 }) 
 ```
-5. Start the cropping process
+5. Use rotateForward and rotateBackward to rotate the picture
+```
+candyCropView.rotateForward()
+candyCropView.rotateBackward()
+
+```
+
+6. Start the cropping process
 ```
 candyCropView.getCroppedBitmapAsync()
 
@@ -141,7 +148,9 @@ CandyCrop.Builder.activity(uri)
   .setCropRatio(1,1) //Sets the aspect ratio of the cropping section
   .setCropWindowSize(0.9f) //Sets the size of the cropping section. 1=Full screen, 0.5=Half screen
   .setDrawBorder(false) //Sets if the border of the cropping section is visible
-  .setOverlayStyle(OverlayStyle.RECT)
+  .setOverlayStyle(OverlayStyle.RECT) //Sets the overlay style (RECT or CIRCLE)
+  .setUseAnimation(false) //Sets if animations should be used
+  .setAllowGestureRotation(true) //Enables rotation with gestures
   .start(this)
 ```
 ### Customize the View
@@ -157,6 +166,9 @@ Some properties can be set in the xml layout
   app:crop_aspect_ratio_x="1" //Sets the aspect ratio of the cropping section for the x dimension
   app:crop_aspect_ratio_y="1" //Sets the aspect ratio of the cropping section for the y dimension
   app:draw_border="true" //Sets if the border of the cropping section is visible
+  app:allow_gesture_rotation="true" //Sets if rotation with gesture is enabled
+  app:use_animation="true" //Sets if animation should be used
+  app:use_circle_overlay="true" //changes the overlay to a circle shape
   />
 ```
 Or use the setters of the ```CandyCropView``` to customize the view
@@ -172,6 +184,9 @@ with(candyCropView) {
   setCropSize(0.8) //Sets the size of the cropping section. 1=Full screen, 0.5=Half screen
   setDrawBorder(true) //Sets if the border of the cropping section is visible
   setInitialRotation(90) //Sets the initial rotation of the loaded image. Must be 0, 90, 180 or 270
+  setOverlayStyle(OverlayStyle.Circle) //Sets the overlay style
+  setAllowGestureRotation(true) //enables rotation with gesture
+  setUseAnimation(true) //Sets if animations should be used
 }
 ```
 ## Changelog

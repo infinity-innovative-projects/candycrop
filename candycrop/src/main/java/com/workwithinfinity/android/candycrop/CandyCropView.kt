@@ -8,6 +8,7 @@ import android.os.AsyncTask
 import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import com.workwithinfinity.android.R
@@ -56,8 +57,13 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
             mCropView.setAspectRatio(aX,aY)
             mCropView.setOverlayColor(at.getColor(R.styleable.CandyCropView_overlay_color,Color.argb(150,0,0,0)))
             mCropView.setDrawBorder(at.getBoolean(R.styleable.CandyCropView_draw_border,true))
+            mCropView.setUseAnimation(at.getBoolean(R.styleable.CandyCropView_use_animation,true))
+            mCropView.setAllowGestureRotation(at.getBoolean(R.styleable.CandyCropView_allow_gesture_rotation,false))
+            val circleShape = at.getBoolean(R.styleable.CandyCropView_use_circle_overlay,false)
+            mCropView.setOverlayStyle(if(circleShape) OverlayStyle.CIRCLE else OverlayStyle.RECT)
             at.recycle()
         }
+        mCropView.setOnInvalidate { this.invalidate() }
     }
 
     /**
@@ -66,6 +72,36 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      */
     fun setBgColor(@ColorInt color : Int) {
         mCropView.setBgColor(color)
+    }
+
+    /**
+     * Rotates the image 90 degree clockwise
+     */
+    fun rotateForward() {
+        mCropView.rotateForward()
+    }
+
+    /**
+     * Rotates the image 90 degree counterclockwise
+     */
+    fun rotateBackward() {
+        mCropView.rotateBackwards()
+    }
+
+    /**
+     * Sets if gesture rotation is enabled
+     * @param allow true for enabled
+     */
+    fun setAllowGestureRotation(allow : Boolean) {
+        mCropView.setAllowGestureRotation(allow)
+    }
+
+    /**
+     * Sets if animation should be used
+     * @param useAnimation true if animation should be used
+     */
+    fun setUseAnimation(useAnimation : Boolean) {
+        mCropView.setUseAnimation(useAnimation)
     }
 
     /**

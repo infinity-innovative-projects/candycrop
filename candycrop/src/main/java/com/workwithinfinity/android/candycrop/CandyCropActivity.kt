@@ -45,6 +45,7 @@ class CandyCropActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.candy_crop_activity) //inflate the view
 
+
         //save the different views
         mCropView = findViewById(R.id.cropping_view)
         mToolbar = findViewById(R.id.toolbar)
@@ -95,6 +96,8 @@ class CandyCropActivity : AppCompatActivity(),
             setQuality(mOptions.quality)
             setFormat(mOptions.format)
             setOverlayStyle(mOptions.overlayStyle)
+            setAllowGestureRotation(mOptions.allowGestureRotation)
+            setUseAnimation(mOptions.useAnimation)
         }
 
         mTxtOk.visibility = when(mOptions.showButtonPositive) {
@@ -127,6 +130,7 @@ class CandyCropActivity : AppCompatActivity(),
             }
         }
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
@@ -161,6 +165,7 @@ class CandyCropActivity : AppCompatActivity(),
         setResult(RESULT_CANCELED)
         finish()
     }
+
 
     /**
      * Save the instance state
