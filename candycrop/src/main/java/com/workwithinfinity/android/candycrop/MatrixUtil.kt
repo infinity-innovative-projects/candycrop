@@ -43,15 +43,4 @@ fun Matrix.interpolate(other : Matrix, t : Float, out : Matrix) {
         fai[i] = fat[i] + (fao[i]-fat[i])*t
     }
     out.setValues(fai)
-    /* old method
-    val sf = (this.getScale() + (other.getScale()-this.getScale())*t).toFloat()
-    out.setScale(sf,sf)
-    out.preRotate(this.getRotation() + (other.getRotation()-this.getRotation())*t)
-
-    val (tx, ty) = this.getTranslation()
-    val (ox, oy) = other.getTranslation()
-    val dx = (ox-tx)*t
-    val dy = (oy-ty)*t
-    out.postTranslate(tx+dx,ty+dy)
-    */
 }

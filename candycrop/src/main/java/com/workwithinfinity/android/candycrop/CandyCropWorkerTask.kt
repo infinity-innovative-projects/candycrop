@@ -15,9 +15,7 @@ import kotlin.math.roundToInt
  * @param sourceUri Uri of the source bitmap.
  * @param destUri Uri where the cropped image will be saved to
  * @param cropRect The rect that will be used to crop the image
- * @param scaleFactor the scalefactor of the image
- * @param positionX the X position of the image
- * @param positionY the Y position of the image
+ * @param matrix matrix defining position, scale and rotation
  * @param useFilter whether the filter should be used when resizing bitmap
  * @param resultWidth the width of the final image in pixel
  * @param resultHeight the height of the final image in pixel

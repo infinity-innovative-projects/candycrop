@@ -274,7 +274,6 @@ class CandyCropView @JvmOverloads constructor(context : Context, attrs : Attribu
      * @param uri uri of the source image
      */
     fun setImageUriAsync(uri : Uri) {
-        Log.d("CANDYCROPVIEW", "setImageUriAsync")
         mUri = uri
         val currentTask = mCandyUriLoadWorkerTask?.get()
         currentTask?.cancel(true)

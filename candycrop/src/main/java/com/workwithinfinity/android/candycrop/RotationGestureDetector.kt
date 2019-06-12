@@ -1,6 +1,7 @@
 package com.workwithinfinity.android.candycrop
 
 
+import android.util.Log
 import android.view.MotionEvent
 
 /**
@@ -38,7 +39,6 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
                 sY = event.getY(event.findPointerIndex(ptrID1))
                 fX = event.getX(event.findPointerIndex(ptrID2))
                 fY = event.getY(event.findPointerIndex(ptrID2))
-                return true
             }
             MotionEvent.ACTION_MOVE -> if (ptrID1 != INVALID_POINTER_ID && ptrID2 != INVALID_POINTER_ID) {
                 val nfX = event.getX(event.findPointerIndex(ptrID2))
@@ -47,8 +47,8 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
                 val nsY = event.getY(event.findPointerIndex(ptrID1))
 
                 angle = angleBetweenLines(fX, fY, sX, sY, nfX, nfY, nsX, nsY)
-                //ignore small angles to prevent unwanted rotation
-                if(angle < 5f && angle > -5f) angle=0f
+                //ignore small angles to prevent unwanted rotation when scaling
+                if(angle < 5f && angle > -5f) return false
                 angleSinceUpdate = angleBeforeUpdate - angle
                 mListener.onRotation(this)
                 angleBeforeUpdate = angle
@@ -58,7 +58,6 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
             MotionEvent.ACTION_UP -> ptrID1 = INVALID_POINTER_ID
             MotionEvent.ACTION_POINTER_UP ->{
                 ptrID2 = INVALID_POINTER_ID
-                return true
             }
             MotionEvent.ACTION_CANCEL -> {
                 ptrID1 = INVALID_POINTER_ID

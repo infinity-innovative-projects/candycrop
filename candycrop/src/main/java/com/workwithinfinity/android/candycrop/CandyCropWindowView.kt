@@ -88,8 +88,10 @@ internal class CandyCropWindowView @JvmOverloads constructor(
     private var mInteracting : Boolean = false
     /** Flag that signals if the user is rotating the picture right now */
     private var mRotating : Boolean = false
+    private var mScaling : Boolean = false
     /** Flag that stores if animation should be used */
     private var mUseAnimation : Boolean = true
+    private var mPointerCount : Int = 0
 
     init {
         mMatrixAnimator.duration = 150
@@ -136,11 +138,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
          */
         override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
             mImageMoving = false
+            mScaling = true
             return true
         }
 
         override fun onScaleEnd(detector: ScaleGestureDetector) {
-            Log.d("ScaleDetecture","OnScaleEnd")
+            //do nothing
         }
 
         /**
@@ -384,6 +387,9 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Sets the state into interaction state (user moves, scales or rotates image)
+     */
     private fun startInteraction() {
         mInteracting = true
         mMatrixAnimator.cancel()
@@ -391,8 +397,14 @@ internal class CandyCropWindowView @JvmOverloads constructor(
 
     }
 
+    /**
+     * Sets the state into no interaction state and starts animating
+     */
     private fun stopInteraction() {
         mInteracting = false
+        mRotating = false
+        mScaling = false
+        mRotatedFlag = false
         if(mUseAnimation) mMatrixAnimator.start()
 
     }
@@ -538,49 +550,52 @@ internal class CandyCropWindowView @JvmOverloads constructor(
         mOnInvalidate?.invoke()
     }
 
-
     /**
      * handels touchscreen events
      * @param event the touch event data
      * @return if the event has been handled
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
         if(mIsLoading) {
             return true
         }
 
+        //general part
         when(event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                mPointerCount++
                 startInteraction()
             }
             MotionEvent.ACTION_UP -> {
+                mPointerCount--
                 stopInteraction()
-                mRotating = false
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                mPointerCount++
+            }
+            MotionEvent.ACTION_POINTER_UP -> {
+                mPointerCount--
             }
         }
-
-        if((mRotationDetector.angle < 7f && mRotationDetector.angle > -7f) || scaleGestureDetector.isInProgress) {
-            scaleGestureDetector.onTouchEvent(event)
-            //if scaling is in progress, don't move the picture
-            if (scaleGestureDetector.isInProgress) {
-                return true
-            }
-        }
-
 
         if(mAllowGestureRotation) {
-            val rotating = mRotationDetector.onTouchEvent(event)
-            if(rotating) {
-                //stop handling touch events when user is rotating
-                mRotating = true
-                return true
-            } else {
-                mRotatedFlag = false
+            if(mRotating || (!mScaling) || event.actionMasked != MotionEvent.ACTION_MOVE) {
+                val rotating = mRotationDetector.onTouchEvent(event)
+                if(rotating) {
+                    //stop handling touch events when user is rotating
+                    mRotating = true
+                }
             }
         }
 
-        if(mRotating) return true
+        if(mScaling || (!mRotating) || event.actionMasked != MotionEvent.ACTION_MOVE) {
+            scaleGestureDetector.onTouchEvent(event)
+        }
+
+
+
+        //stop here if the gesture is a multitouch gesture
+        if(mPointerCount>1 || mScaling || mRotating) return true
 
         val x = event.rawX
         val y = event.rawY
