@@ -26,7 +26,7 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      */
     override fun doInBackground(vararg params: Any?): UriLoadResult {
         val (width, height, type) = getImageDimensions(uri)
-        val maxSize = GLES10.GL_MAX_TEXTURE_SIZE
+        val maxSize = GLES10.GL_MAX_TEXTURE_SIZE/2
         //Downsample big pictures to preserve memory
         val sampleSize = calculateSampleSize(width,height,maxSize)
         val options = BitmapFactory.Options()
