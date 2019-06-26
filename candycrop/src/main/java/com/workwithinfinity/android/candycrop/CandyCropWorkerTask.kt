@@ -59,9 +59,8 @@ class CandyCropWorkerTask(private val source : Bitmap,
         //force round down if rounding up would lead to a crop bigger than the image
         val width = if(left + cropRectFloat.width().roundToInt() > source.width) cropRectFloat.width().toInt() else cropRectFloat.width().roundToInt()
         val height = if(top + cropRectFloat.height().roundToInt() > source.height) cropRectFloat.height().toInt() else cropRectFloat.height().roundToInt()
-        var croppedBitmap = Bitmap.createBitmap(source,left,top,width,height)
+        var croppedBitmap = Bitmap.createBitmap(source,left,top,width,height,null,useFilter)
         croppedBitmap = Bitmap.createBitmap(croppedBitmap,0,0,croppedBitmap.width,croppedBitmap.height,rotationMatrix,useFilter)
-
 
         val finalBitmap = if(resultWidth > 0 && resultHeight > 0) {
             //resize the final image. Fills with background color if aspect ratios don't match
