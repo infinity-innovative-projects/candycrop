@@ -15,6 +15,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
     private var ptrID1: Int = 0
     private var ptrID2: Int = 0
     private var angleBeforeUpdate : Float = 0f
+    private var active : Boolean = false
     /** The angle difference between two onRotation calls */
     var angleSinceUpdate : Float = 0f
         private set
@@ -48,7 +49,8 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
 
                 angle = angleBetweenLines(fX, fY, sX, sY, nfX, nfY, nsX, nsY)
                 //ignore small angles to prevent unwanted rotation when scaling
-                if(angle < 5f && angle > -5f) return false
+                if(!active && (angle < 5f && angle > -5f)) return false
+                active = true
                 angleSinceUpdate = angleBeforeUpdate - angle
                 mListener.onRotation(this)
                 angleBeforeUpdate = angle
@@ -57,9 +59,11 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
             }
             MotionEvent.ACTION_UP -> ptrID1 = INVALID_POINTER_ID
             MotionEvent.ACTION_POINTER_UP ->{
+                active = false
                 ptrID2 = INVALID_POINTER_ID
             }
             MotionEvent.ACTION_CANCEL -> {
+                active = false
                 ptrID1 = INVALID_POINTER_ID
                 ptrID2 = INVALID_POINTER_ID
             }
