@@ -136,9 +136,12 @@ internal class CandyCropWindowView @JvmOverloads constructor(
          * Called on the beginning of the scaling process
          * @param detector the scaling data
          */
-        override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+        override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+            /*
+            Settings flags moved to onScale to check for minimum scale factor before starting to scale
             mImageMoving = false
             mScaling = true
+            */
             return true
         }
 
@@ -150,9 +153,17 @@ internal class CandyCropWindowView @JvmOverloads constructor(
          * Called when scaling the image with gesture
          * @param detector the scaling data
          */
-        override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            if (detector == null)
-                return false
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+          //  Log.d("SCALEGESTUREDETECTOR","OnScale sf: ${detector.scaleFactor}")
+
+            if(!mScaling) {
+                if(detector.scaleFactor < 1.04 && detector.scaleFactor > 0.96) {
+                    return false
+                } else {
+                    mImageMoving = false
+                    mScaling = true
+                }
+            }
 
             val f = FloatArray(9)
             mMatrix.getValues(f)
