@@ -34,26 +34,46 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
         val fileDescriptor = view.get()?.context?.contentResolver?.openAssetFileDescriptor(uri,"r")
         val bm = BitmapFactory.decodeFileDescriptor(fileDescriptor?.fileDescriptor,null,options)
         fileDescriptor?.close()
+        val matrix = Matrix()
         val exif = getExifData(view.get()?.context,uri)
-        val exifRotation = when(exif?.getAttributeInt(
+        when(exif?.getAttributeInt(
             ExifInterface.TAG_ORIENTATION,
             ExifInterface.ORIENTATION_NORMAL)) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-            else -> 0f
+            ExifInterface.ORIENTATION_ROTATE_90 -> {
+                matrix.postRotate(90f)
+            }
+            ExifInterface.ORIENTATION_ROTATE_180 -> {
+                matrix.postRotate(180f)
+            }
+            ExifInterface.ORIENTATION_ROTATE_270 -> {
+                matrix.postRotate(270f)
+            }
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> {
+                matrix.postScale(1f,-1f,bm.width/2f,bm.height/2f)
+            }
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> {
+                matrix.postScale(-1f,1f,bm.width/2f,bm.height/2f)
+            }
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                matrix.postScale(-1f,1f,bm.width/2f,bm.height/2f)
+                matrix.postRotate(270f)
+            }
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                matrix.postScale(-1f,1f,bm.width/2f,bm.height/2f)
+                matrix.postRotate(90f)
+            }
         }
 
-        val sumRotation = (exifRotation + rotation)%360
-        val finalRotation = when {
-            (sumRotation>0f && sumRotation<=90f) -> 90f
-            (sumRotation>90 && sumRotation<=180) -> 180f
-            (sumRotation>180 && sumRotation<=270) -> 270f
-            else -> 0f
+        when {
+            (rotation>0f && rotation <=90f) -> matrix.postRotate(90f)
+            (rotation>90f && rotation <=180f) -> matrix.postRotate(180f)
+            (rotation>180f && rotation <=270f) -> matrix.postRotate(270f)
         }
+
 
         //images bigger than GL_MAX_TEXTURE_SIZE cant be rendered in the view
         //could be removed, since rescaling huge pictures is done on loading now
+        //keeping it for now, to be safe
         val sizedBm = if(bm.width > maxSize || bm.height > maxSize) {
             val dx = maxSize/bm.width.toFloat()
             val dy = maxSize/bm.height.toFloat()
@@ -66,13 +86,12 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
             bm
         }
 
-        val finalBm = if(finalRotation==0f) {
-            sizedBm
-        } else {
-            val matrix = Matrix()
-            matrix.postRotate(finalRotation)
+        val finalBm = if(!matrix.isIdentity) {
             Bitmap.createBitmap(sizedBm,0,0,sizedBm.width,sizedBm.height,matrix,true)
+        } else {
+            sizedBm
         }
+
         if(finalBm!=sizedBm) {
             sizedBm.recycle()
         }
