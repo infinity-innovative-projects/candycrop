@@ -24,6 +24,8 @@ class CandyCrop {
         const val CANDYCROP_SOURCE_URI = "CANDYCROP_SOURCE_URI"
         /** const name for the result in the bundle */
         const val CANDYCROP_RESULT_EXTRA = "CANDYCROP_RESULT_EXTRA"
+        /** const name for the error in the bundle */
+        const val CANDYCROP_ERROR_EXTRA = "CANDYCROP_ERROR_EXTRA"
         /** id for the activity request */
         const val CANDYCROP_ACTIVITY_REQUEST = 2104
         /** id for the read permission request */
@@ -36,10 +38,10 @@ class CandyCrop {
          * @param uri uri to the file that should be read
          * @return true if the permission is requiered
          */
-        fun checkReadPermissionRequired(context : Context,uri : Uri) : Boolean {
+        fun checkReadPermissionRequired(context: Context, uri: Uri): Boolean {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    && checkIfUriNeedsPermission(context,uri)
+                    && checkIfUriNeedsPermission(context, uri)
         }
 
         /**
@@ -48,13 +50,13 @@ class CandyCrop {
          * @param uri uri to the file that should be read
          * @return true if the permission is required
          */
-        private fun checkIfUriNeedsPermission(context: Context,uri : Uri) : Boolean {
+        private fun checkIfUriNeedsPermission(context: Context, uri: Uri): Boolean {
             return try {
                 val iS = context.contentResolver.openInputStream(uri)
                 iS?.close()
                 false
-            } catch(ex : Exception) {
-                 true
+            } catch (ex: Exception) {
+                true
             }
         }
     }
@@ -65,13 +67,13 @@ class CandyCrop {
          * Generates an ActivityBuilder
          * @param uri Uri of the source image
          */
-        fun activity(uri : Uri) : ActivityBuilder =
+        fun activity(uri: Uri): ActivityBuilder =
             ActivityBuilder(uri)
 
         /** Builder for the activity
          * @param sourceUri Uri of the source image
          */
-        class ActivityBuilder(private val sourceUri : Uri) {
+        class ActivityBuilder(private val sourceUri: Uri) {
             /** Options used for the builder */
             private val mOptions = CandyCropOptions()
 
@@ -79,14 +81,14 @@ class CandyCrop {
              * Generates an intent to launch the crop activity
              * @param context the context
              */
-            private fun getIntent(context : Context) : Intent {
+            private fun getIntent(context: Context): Intent {
                 val intent = Intent()
                 intent.setClass(context, CandyCropActivity::class.java)
                 val bundle = Bundle().apply {
                     putParcelable(CANDYCROP_OPTIONS, mOptions)
                     putParcelable(CANDYCROP_SOURCE_URI, sourceUri)
                 }
-                intent.putExtra(CANDYCROP_BUNDLE,bundle)
+                intent.putExtra(CANDYCROP_BUNDLE, bundle)
                 return intent
             }
 
@@ -94,8 +96,9 @@ class CandyCrop {
              * starts the CandyCropActivity
              * @param activity the activity starting the CandyCropActivity
              */
-            fun start(activity : Activity) {
-                activity.startActivityForResult(getIntent(activity),
+            fun start(activity: Activity) {
+                activity.startActivityForResult(
+                    getIntent(activity),
                     CANDYCROP_ACTIVITY_REQUEST
                 )
             }
@@ -105,7 +108,7 @@ class CandyCrop {
              * @param context the context
              * @param fragment the fragment
              */
-            fun start(context : Context,fragment : androidx.fragment.app.Fragment) {
+            fun start(context: Context, fragment: androidx.fragment.app.Fragment) {
                 fragment.startActivityForResult(getIntent(context), CANDYCROP_ACTIVITY_REQUEST)
             }
 
@@ -114,7 +117,7 @@ class CandyCrop {
              * @param rotation the desired rotation
              * @return the builder itself
              */
-            fun setRotation(rotation : Float) : ActivityBuilder {
+            fun setRotation(rotation: Float): ActivityBuilder {
                 mOptions.rotation = rotation
                 return this
             }
@@ -124,7 +127,7 @@ class CandyCrop {
              * @param useToolbar true shows the toolbar, false hides it
              * @return the builder itself
              */
-            fun setUseToolbar(useToolbar : Boolean) : ActivityBuilder {
+            fun setUseToolbar(useToolbar: Boolean): ActivityBuilder {
                 mOptions.useToolbar = useToolbar
                 return this
             }
@@ -135,7 +138,7 @@ class CandyCrop {
              * @param style the desired style
              * @return the builder itself
              */
-            fun setOverlayStyle(style : OverlayStyle) : ActivityBuilder {
+            fun setOverlayStyle(style: OverlayStyle): ActivityBuilder {
                 mOptions.overlayStyle = style
                 return this
             }
@@ -145,7 +148,7 @@ class CandyCrop {
              * @param resultUri the uri
              * @return the builder itself
              */
-            fun setResultUri(resultUri : Uri) : ActivityBuilder {
+            fun setResultUri(resultUri: Uri): ActivityBuilder {
                 mOptions.resultUri = resultUri
                 return this
             }
@@ -156,7 +159,7 @@ class CandyCrop {
              * @param ratioY Aspect ratio for the y dimension
              * @return the builder itself
              */
-            fun setCropRatio(ratioX : Int, ratioY : Int) : ActivityBuilder {
+            fun setCropRatio(ratioX: Int, ratioY: Int): ActivityBuilder {
                 mOptions.ratioX = ratioX
                 mOptions.ratioY = ratioY
                 return this
@@ -167,7 +170,7 @@ class CandyCrop {
              * @param color the desired color
              * @return the builder itself
              */
-            fun setOverlayColor(@ColorInt color : Int) : ActivityBuilder {
+            fun setOverlayColor(@ColorInt color: Int): ActivityBuilder {
                 mOptions.overlayColor = color
                 return this
             }
@@ -179,7 +182,7 @@ class CandyCrop {
              * 0.5 = half the view
              * @return the builder itself
              */
-            fun setCropWindowSize(size : Float) : ActivityBuilder {
+            fun setCropWindowSize(size: Float): ActivityBuilder {
                 mOptions.cropSize = size
                 return this
             }
@@ -189,7 +192,7 @@ class CandyCrop {
              * @param text the text
              * @return the builder itself
              */
-            fun setPositiveText(text : String) : ActivityBuilder {
+            fun setPositiveText(text: String): ActivityBuilder {
                 mOptions.positiveText = text
                 return this
             }
@@ -199,7 +202,7 @@ class CandyCrop {
              * @param text the text
              * @return the builder itself
              */
-            fun setNegativeText(text : String) : ActivityBuilder {
+            fun setNegativeText(text: String): ActivityBuilder {
                 mOptions.negativeText = text
                 return this
             }
@@ -209,7 +212,7 @@ class CandyCrop {
              * @param text the text
              * @return the builder itself
              */
-            fun setLabelText(text : String) : ActivityBuilder {
+            fun setLabelText(text: String): ActivityBuilder {
                 mOptions.labelText = text
                 return this
             }
@@ -219,7 +222,7 @@ class CandyCrop {
              * @param drawBorder if the rect should be drawn
              * @return the builder itself
              */
-            fun setDrawBorder(drawBorder : Boolean) : ActivityBuilder {
+            fun setDrawBorder(drawBorder: Boolean): ActivityBuilder {
                 mOptions.drawBorder = drawBorder
                 return this
             }
@@ -229,7 +232,7 @@ class CandyCrop {
              * @param format the format
              * @return the builder itself
              */
-            fun setResultFormat(format : Bitmap.CompressFormat) : ActivityBuilder {
+            fun setResultFormat(format: Bitmap.CompressFormat): ActivityBuilder {
                 mOptions.format = format
                 return this
             }
@@ -239,7 +242,7 @@ class CandyCrop {
              * @param allow true for enabled
              * @return the builder itself
              */
-            fun setAllowGestureRotation(allow : Boolean) : ActivityBuilder {
+            fun setAllowGestureRotation(allow: Boolean): ActivityBuilder {
                 mOptions.allowGestureRotation = allow
                 return this
             }
@@ -249,7 +252,7 @@ class CandyCrop {
              * @param useAnimation true if animation should be used
              * @return the builder itself
              */
-            fun setUseAnimation(useAnimation : Boolean) : ActivityBuilder {
+            fun setUseAnimation(useAnimation: Boolean): ActivityBuilder {
                 mOptions.useAnimation = useAnimation
                 return this
             }
@@ -259,8 +262,8 @@ class CandyCrop {
              * @param quality the desired quality. Ignored if not between 0 and 100
              * @return the builder itself
              */
-            fun setResultQuality(quality : Int) : ActivityBuilder {
-                if(quality !in 0..100) return this
+            fun setResultQuality(quality: Int): ActivityBuilder {
+                if (quality !in 0..100) return this
                 mOptions.quality = quality
                 return this
             }
@@ -272,7 +275,7 @@ class CandyCrop {
              * @param negative show negative button
              * @return the builder itself
              */
-            fun setButtonVisibility(positive : Boolean, negative : Boolean) : ActivityBuilder {
+            fun setButtonVisibility(positive: Boolean, negative: Boolean): ActivityBuilder {
                 mOptions.showButtonPositive = positive
                 mOptions.showButtonNegative = negative
                 return this
@@ -284,7 +287,7 @@ class CandyCrop {
              * @param height the height
              * @return the builder itself
              */
-            fun setResultSize(width : Int, height : Int) : ActivityBuilder {
+            fun setResultSize(width: Int, height: Int): ActivityBuilder {
                 mOptions.resultWidth = width
                 mOptions.resultHeight = height
                 return this
@@ -294,7 +297,7 @@ class CandyCrop {
              * Sets the desired background color of the view in the acivity
              * @param color the color as ColorInt
              */
-            fun setBackgroundColor(@ColorInt color : Int) : ActivityBuilder {
+            fun setBackgroundColor(@ColorInt color: Int): ActivityBuilder {
                 mOptions.backgroundColor = color
                 return this
             }
@@ -306,5 +309,5 @@ class CandyCrop {
      * get this in the onActivityResult method with the request code CANDYCROP_ACTIVITY_REQUEST
      */
     @Parcelize
-    data class CandyCropActivityResult(val resultUri : Uri?) : Parcelable
+    data class CandyCropActivityResult(val resultUri: Uri?) : Parcelable
 }

@@ -1,23 +1,21 @@
 package com.workwithinfinity.android.candycrop
 
-
-import android.util.Log
 import android.view.MotionEvent
 
 /**
  * Gesture detector for rotations
  */
 class RotationGestureDetector(private val mListener: OnRotationGestureListener) {
-    private var fX : Float = 0f
+    private var fX: Float = 0f
     private var fY: Float = 0f
     private var sX: Float = 0f
     private var sY: Float = 0f
     private var ptrID1: Int = 0
     private var ptrID2: Int = 0
-    private var angleBeforeUpdate : Float = 0f
-    private var active : Boolean = false
+    private var angleBeforeUpdate: Float = 0f
+    private var active: Boolean = false
     /** The angle difference between two onRotation calls */
-    var angleSinceUpdate : Float = 0f
+    var angleSinceUpdate: Float = 0f
         private set
     /** The rotated angle from the start of the gesture */
     var angle: Float = 0f
@@ -49,7 +47,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
 
                 angle = angleBetweenLines(fX, fY, sX, sY, nfX, nfY, nsX, nsY)
                 //ignore small angles to prevent unwanted rotation when scaling
-                if(!active && (angle < 5f && angle > -5f)) return false
+                if (!active && (angle < 5f && angle > -5f)) return false
                 active = true
                 angleSinceUpdate = angleBeforeUpdate - angle
                 mListener.onRotation(this)
@@ -58,7 +56,7 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener) 
                 return true
             }
             MotionEvent.ACTION_UP -> ptrID1 = INVALID_POINTER_ID
-            MotionEvent.ACTION_POINTER_UP ->{
+            MotionEvent.ACTION_POINTER_UP -> {
                 active = false
                 ptrID2 = INVALID_POINTER_ID
             }
