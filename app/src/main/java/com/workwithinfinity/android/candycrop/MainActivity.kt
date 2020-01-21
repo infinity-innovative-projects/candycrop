@@ -16,9 +16,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.workwithinfinity.android.R
 import java.io.File
-import java.io.InputStream
-import java.io.ObjectInput
-import java.io.ObjectInputStream
 
 class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
 

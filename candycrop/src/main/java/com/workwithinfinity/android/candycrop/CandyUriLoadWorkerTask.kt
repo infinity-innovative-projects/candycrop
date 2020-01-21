@@ -18,14 +18,18 @@ import kotlin.math.*
  * @param uri Uri of the image to load
  * @param view WeakReference of the view starting the task
  */
-class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakReference<CandyCropView>, private val rotation : Float) : AsyncTask<Any, Any, CandyUriLoadWorkerTask.UriLoadResult>() {
+class CandyUriLoadWorkerTask(
+    private val uri: Uri,
+    private val view: WeakReference<CandyCropView>,
+    private val rotation: Float
+) : AsyncTask<Any, Any, CandyUriLoadWorkerTask.UriLoadResult>() {
 
     /**
      * Loads the image into a bitmap and resize it if it's to big
      * @param params ignored
      */
     override fun doInBackground(vararg params: Any?): UriLoadResult {
-        var fileDescriptor : AssetFileDescriptor? = null
+        var fileDescriptor: AssetFileDescriptor? = null
         try {
             val (width, height, type) = getImageDimensions(uri)
             val maxSize = GLES10.GL_MAX_TEXTURE_SIZE / 2
@@ -102,8 +106,8 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
                 sizedBm.recycle()
             }
             return UriLoadResult(finalBm, uri, null)
-        } catch(ex : Exception) {
-            return UriLoadResult(null,uri,ex)
+        } catch (ex: Exception) {
+            return UriLoadResult(null, uri, ex)
         } finally {
             fileDescriptor?.close()
         }
@@ -115,8 +119,8 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * @param uri the uri
      * @return the ExifInterface or null if it can't read it
      */
-    private fun getExifData(context : Context?,uri : Uri) : ExifInterface?  {
-        if(context==null) return null
+    private fun getExifData(context: Context?, uri: Uri): ExifInterface? {
+        if (context == null) return null
         val inputStream = context.contentResolver.openInputStream(uri) ?: return null
         val exif = ExifInterface(inputStream)
         inputStream.close()
@@ -128,14 +132,14 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * @param uri the uri referencing the image
      * @return Triple containing Width, Height, Type (in that order)
      */
-    private fun getImageDimensions(uri : Uri) : Triple<Int,Int,String?> {
+    private fun getImageDimensions(uri: Uri): Triple<Int, Int, String?> {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
-        var fileDescriptor : AssetFileDescriptor? = null
+        var fileDescriptor: AssetFileDescriptor? = null
         try {
-            fileDescriptor = view.get()?.context?.contentResolver?.openAssetFileDescriptor(uri,"r")
-            BitmapFactory.decodeFileDescriptor(fileDescriptor?.fileDescriptor,null,options)
-        } catch (ex : Exception) {
+            fileDescriptor = view.get()?.context?.contentResolver?.openAssetFileDescriptor(uri, "r")
+            BitmapFactory.decodeFileDescriptor(fileDescriptor?.fileDescriptor, null, options)
+        } catch (ex: Exception) {
             throw ex
         } finally {
             fileDescriptor?.close()
@@ -144,7 +148,7 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
         val width = options.outWidth
         val height = options.outHeight
         val type = options.outMimeType
-        return Triple(width,height,type)
+        return Triple(width, height, type)
     }
 
     /**
@@ -154,8 +158,8 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * @param maxSize The maximal Height of the image
      * @return The needed sampleSize to have a image with original width/height smaller than maxSize when loading
      */
-    private fun calculateSampleSize(width : Int, height: Int, maxSize : Int) : Int {
-       var sampleSize = 1
+    private fun calculateSampleSize(width: Int, height: Int, maxSize: Int): Int {
+        var sampleSize = 1
         if (height > maxSize || width > maxSize) {
             sampleSize = 2.0.pow(
                 ceil(
@@ -184,5 +188,5 @@ class CandyUriLoadWorkerTask(private val uri : Uri,private val view : WeakRefere
      * @param bitmap the loaded bitmap
      * @param uri the source uri
      */
-    data class UriLoadResult(val bitmap : Bitmap?, val uri : Uri, val error : Exception?)
+    data class UriLoadResult(val bitmap: Bitmap?, val uri: Uri, val error: Exception?)
 }

@@ -25,19 +25,19 @@ class CandyCropActivity : AppCompatActivity(),
     CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
 
     /** The CandyCropView */
-    private lateinit var mCropView : CandyCropView
+    private lateinit var mCropView: CandyCropView
     /** the Toolbar */
-    private lateinit var mToolbar : Toolbar
+    private lateinit var mToolbar: Toolbar
     /** the options set by the builder */
-    private lateinit var mOptions : CandyCropOptions
+    private lateinit var mOptions: CandyCropOptions
     /** the uri of the source image */
-    private lateinit var mSourceUri : Uri
+    private lateinit var mSourceUri: Uri
     /** the positive button */
-    private lateinit var mTxtOk : TextView
+    private lateinit var mTxtOk: TextView
     /** the negative button */
-    private lateinit var mTxtCancel : TextView
+    private lateinit var mTxtCancel: TextView
     /** the label text */
-    private lateinit var mTxtLabel : TextView
+    private lateinit var mTxtLabel: TextView
 
     /**
      * onCreate of the activity
@@ -60,11 +60,11 @@ class CandyCropActivity : AppCompatActivity(),
 
         //read options
         mOptions = bundle.getParcelable(CandyCrop.CANDYCROP_OPTIONS) ?: CandyCropOptions()
-        val sourceUri : Uri? = bundle.getParcelable(CandyCrop.CANDYCROP_SOURCE_URI)
+        val sourceUri: Uri? = bundle.getParcelable(CandyCrop.CANDYCROP_SOURCE_URI)
 
 
         //apply options
-        if(mOptions.useToolbar) {
+        if (mOptions.useToolbar) {
             supportActionBar?.show()
         } else {
             supportActionBar?.hide()
@@ -73,25 +73,25 @@ class CandyCropActivity : AppCompatActivity(),
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if(mOptions.positiveText.isNotBlank()) {
+        if (mOptions.positiveText.isNotBlank()) {
             mTxtOk.text = mOptions.positiveText
         }
 
-        if(mOptions.negativeText.isNotBlank()) {
+        if (mOptions.negativeText.isNotBlank()) {
             mTxtCancel.text = mOptions.negativeText
         }
 
-        if(mOptions.labelText.isNotBlank()) {
+        if (mOptions.labelText.isNotBlank()) {
             mTxtLabel.text = mOptions.labelText
         }
 
         with(mCropView) {
-            setAspectRatio(mOptions.ratioX,mOptions.ratioY)
+            setAspectRatio(mOptions.ratioX, mOptions.ratioY)
             setResultUri(mOptions.resultUri)
             setOnCropCompleteListener(this@CandyCropActivity)
             setOnLoadUriImageCompleteListener(this@CandyCropActivity)
             setOverlayColor(mOptions.overlayColor)
-            setResultSize(mOptions.resultWidth,mOptions.resultHeight)
+            setResultSize(mOptions.resultWidth, mOptions.resultHeight)
             setCropSize(mOptions.cropSize)
             setBgColor(mOptions.backgroundColor)
             setInitialRotation(mOptions.rotation)
@@ -105,7 +105,7 @@ class CandyCropActivity : AppCompatActivity(),
 
         mTxtOk.visibility = View.GONE
         mTxtOk.setTextColor(mOptions.buttonTextColor)
-        mTxtCancel.visibility = when(mOptions.showButtonNegative) {
+        mTxtCancel.visibility = when (mOptions.showButtonNegative) {
             true -> View.VISIBLE
             false -> View.GONE
         }
@@ -118,34 +118,41 @@ class CandyCropActivity : AppCompatActivity(),
             onCancel()
         }
 
-        if(savedInstanceState == null) {
-            if(sourceUri!= null && sourceUri !=(Uri.EMPTY)) {
+        if (savedInstanceState == null) {
+            if (sourceUri != null && sourceUri != (Uri.EMPTY)) {
                 checkAndLoad(sourceUri)
             }
         } else {
-            val uri : Uri? = savedInstanceState.getParcelable("sourceUri")
-            if(uri!=null)
-            {
+            val uri: Uri? = savedInstanceState.getParcelable("sourceUri")
+            if (uri != null) {
                 checkAndLoad(uri)
             }
         }
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mCropView.setImageUriAsync(mSourceUri)
             } else {
-                Toast.makeText(this,"Permission required", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Permission required", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun checkAndLoad(uri : Uri) {
+    private fun checkAndLoad(uri: Uri) {
         mSourceUri = uri
-        if(CandyCrop.checkReadPermissionRequired(this,uri)) {
-            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION)
+        if (CandyCrop.checkReadPermissionRequired(this, uri)) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                CandyCrop.CANDYCROP_REQUEST_READ_PERMISSION
+            )
             return
         }
         mCropView.setImageUriAsync(uri)
@@ -172,7 +179,7 @@ class CandyCropActivity : AppCompatActivity(),
      * @param outState bundle to save the state in
      */
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable("sourceUri",mSourceUri)
+        outState.putParcelable("sourceUri", mSourceUri)
         super.onSaveInstanceState(outState)
     }
 
@@ -181,7 +188,7 @@ class CandyCropActivity : AppCompatActivity(),
      * @param item the clicked item
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.candycrop_menu_crop -> {
                 onConfirm()
                 true
@@ -199,7 +206,7 @@ class CandyCropActivity : AppCompatActivity(),
      * @param menu the menu
      */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.candycrop_menu,menu)
+        menuInflater.inflate(R.menu.candycrop_menu, menu)
         return true
     }
 
@@ -211,8 +218,8 @@ class CandyCropActivity : AppCompatActivity(),
         val intent = Intent()
         intent.putExtras(getIntent())
         val res = CandyCrop.CandyCropActivityResult(result.croppedUri)
-        intent.putExtra(CandyCrop.CANDYCROP_RESULT_EXTRA,res)
-        setResult(RESULT_OK,intent)
+        intent.putExtra(CandyCrop.CANDYCROP_RESULT_EXTRA, res)
+        setResult(RESULT_OK, intent)
         finish()
     }
 
@@ -220,16 +227,16 @@ class CandyCropActivity : AppCompatActivity(),
         finishWithError(error)
     }
 
-    private fun finishWithError(error : Exception) {
+    private fun finishWithError(error: Exception) {
         val intent = Intent()
         intent.putExtras(getIntent())
-        intent.putExtra(CandyCrop.CANDYCROP_ERROR_EXTRA,error)
-        setResult(Activity.RESULT_CANCELED,intent)
+        intent.putExtra(CandyCrop.CANDYCROP_ERROR_EXTRA, error)
+        setResult(Activity.RESULT_CANCELED, intent)
         finish()
     }
 
     override fun onLoadUriImageComplete(result: Bitmap, uri: Uri) {
-        mTxtOk.visibility = when(mOptions.showButtonPositive) {
+        mTxtOk.visibility = when (mOptions.showButtonPositive) {
             true -> View.VISIBLE
             false -> View.GONE
         }

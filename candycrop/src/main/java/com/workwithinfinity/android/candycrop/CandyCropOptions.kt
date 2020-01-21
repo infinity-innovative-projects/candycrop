@@ -32,28 +32,29 @@ import kotlinx.android.parcel.Parcelize
  * @param allowGestureRotation enables gesture rotation when true
  */
 @Parcelize
-data class CandyCropOptions(var useToolbar : Boolean = true,
-                            var resultUri : Uri? = null,
-                            var ratioX : Int = 1,
-                            var ratioY : Int = 1,
-                            @ColorInt var overlayColor : Int = Color.argb(150,0,0,0),
-                            var cropSize : Float = 0.9f,
-                            var resultWidth : Int = 100,
-                            var resultHeight : Int = 100,
-                            @ColorInt var backgroundColor : Int = Color.TRANSPARENT,
-                            var showButtonPositive : Boolean = true,
-                            var showButtonNegative : Boolean = true,
-                            @ColorInt var buttonTextColor : Int = Color.WHITE,
-                            var rotation : Float = 0f,
-                            var positiveText : String = "",
-                            var negativeText : String = "",
-                            var labelText : String = "",
-                            var drawBorder : Boolean = true,
-                            var overlayStyle : OverlayStyle = OverlayStyle.RECT,
-                            var quality : Int = 95,
-                            var format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-                            var allowGestureRotation : Boolean = false,
-                            var useAnimation : Boolean = true
+data class CandyCropOptions(
+    var useToolbar: Boolean = true,
+    var resultUri: Uri? = null,
+    var ratioX: Int = 1,
+    var ratioY: Int = 1,
+    @ColorInt var overlayColor: Int = Color.argb(150, 0, 0, 0),
+    var cropSize: Float = 0.9f,
+    var resultWidth: Int = 100,
+    var resultHeight: Int = 100,
+    @ColorInt var backgroundColor: Int = Color.TRANSPARENT,
+    var showButtonPositive: Boolean = true,
+    var showButtonNegative: Boolean = true,
+    @ColorInt var buttonTextColor: Int = Color.WHITE,
+    var rotation: Float = 0f,
+    var positiveText: String = "",
+    var negativeText: String = "",
+    var labelText: String = "",
+    var drawBorder: Boolean = true,
+    var overlayStyle: OverlayStyle = OverlayStyle.RECT,
+    var quality: Int = 95,
+    var format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+    var allowGestureRotation: Boolean = false,
+    var useAnimation: Boolean = true
 
 ) : Parcelable
 

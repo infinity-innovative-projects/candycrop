@@ -22,27 +22,34 @@ import kotlin.math.roundToInt
  * @param backgroundColor the background color used when the result size has not the same aspect ratio as the image
  * @param view the view launching the task
  */
-class CandyCropWorkerTask(private val source : Bitmap,
-                          private val sourceUri : Uri?,
-                          private val destUri : Uri?,
-                          private val cropRect : Rect,
-                          private val matrix : Matrix,
-                          private val useFilter : Boolean = true,
-                          private val resultWidth : Int,
-                          private val resultHeight : Int,
-                          @ColorInt private val backgroundColor : Int,
-                          private val view : WeakReference<CandyCropView>,
-                          private val quality : Int = 95,
-                          private val format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
-) : AsyncTask<Unit,Unit, CandyCropView.CropResult>() {
+class CandyCropWorkerTask(
+    private val source: Bitmap,
+    private val sourceUri: Uri?,
+    private val destUri: Uri?,
+    private val cropRect: Rect,
+    private val matrix: Matrix,
+    private val useFilter: Boolean = true,
+    private val resultWidth: Int,
+    private val resultHeight: Int,
+    @ColorInt private val backgroundColor: Int,
+    private val view: WeakReference<CandyCropView>,
+    private val quality: Int = 95,
+    private val format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+) : AsyncTask<Unit, Unit, CandyCropView.CropResult>() {
 
     /**
      * Crops the image and saves it to destUri (if destUri != null)
      * @param params ignored
      */
     override fun doInBackground(vararg params: Unit?): CandyCropView.CropResult {
-        if(isCancelled) {
-            return CandyCropView.CropResult(null, sourceUri, null, null,Exception("Process Canceled"))
+        if (isCancelled) {
+            return CandyCropView.CropResult(
+                null,
+                sourceUri,
+                null,
+                null,
+                Exception("Process Canceled")
+            )
         }
 
         try {
@@ -138,8 +145,8 @@ class CandyCropWorkerTask(private val source : Bitmap,
             }
 
             return CandyCropView.CropResult(source, sourceUri, finalBitmap, destUri, null)
-        } catch(ex : Exception) {
-            return CandyCropView.CropResult(source,sourceUri,null,destUri,ex)
+        } catch (ex: Exception) {
+            return CandyCropView.CropResult(source, sourceUri, null, destUri, ex)
         }
     }
 
@@ -148,7 +155,7 @@ class CandyCropWorkerTask(private val source : Bitmap,
      * @param result the result of the cropping
      */
     override fun onPostExecute(result: CandyCropView.CropResult) {
-            view.get()?.onCroppingBitmapComplete(result)
+        view.get()?.onCroppingBitmapComplete(result)
     }
 
     /**
@@ -157,13 +164,19 @@ class CandyCropWorkerTask(private val source : Bitmap,
      * @param context the context
      * @param uri the uri to be saved to
      */
-    private fun saveBitmapToUri(bm : Bitmap, context : Context, uri : Uri, format : Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG, quality : Int = 95) {
-        val q = if(quality in 0..100) quality else 95
-        var outputStream : OutputStream? = null
+    private fun saveBitmapToUri(
+        bm: Bitmap,
+        context: Context,
+        uri: Uri,
+        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+        quality: Int = 95
+    ) {
+        val q = if (quality in 0..100) quality else 95
+        var outputStream: OutputStream? = null
         try {
             outputStream = context.contentResolver.openOutputStream(uri)
-            bm.compress(format,q,outputStream)
-        }catch(ex : Exception) {
+            bm.compress(format, q, outputStream)
+        } catch (ex: Exception) {
             throw ex
         } finally {
             outputStream?.close()

@@ -8,7 +8,6 @@ import android.os.AsyncTask
 import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import com.workwithinfinity.android.R
