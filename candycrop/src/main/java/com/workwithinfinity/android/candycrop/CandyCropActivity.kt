@@ -1,8 +1,10 @@
 package com.workwithinfinity.android.candycrop
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
@@ -20,7 +22,7 @@ import com.workwithinfinity.android.R
  * Use the CandyCrop.Builder to use this activity
  */
 class CandyCropActivity : AppCompatActivity(),
-    CandyCropView.OnCropCompleteListener {
+    CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
 
     /** The CandyCropView */
     private lateinit var mCropView : CandyCropView
@@ -87,6 +89,7 @@ class CandyCropActivity : AppCompatActivity(),
             setAspectRatio(mOptions.ratioX,mOptions.ratioY)
             setResultUri(mOptions.resultUri)
             setOnCropCompleteListener(this@CandyCropActivity)
+            setOnLoadUriImageCompleteListener(this@CandyCropActivity)
             setOverlayColor(mOptions.overlayColor)
             setResultSize(mOptions.resultWidth,mOptions.resultHeight)
             setCropSize(mOptions.cropSize)
@@ -100,10 +103,7 @@ class CandyCropActivity : AppCompatActivity(),
             setUseAnimation(mOptions.useAnimation)
         }
 
-        mTxtOk.visibility = when(mOptions.showButtonPositive) {
-            true -> View.VISIBLE
-            false -> View.GONE
-        }
+        mTxtOk.visibility = View.GONE
         mTxtOk.setTextColor(mOptions.buttonTextColor)
         mTxtCancel.visibility = when(mOptions.showButtonNegative) {
             true -> View.VISIBLE
@@ -214,5 +214,28 @@ class CandyCropActivity : AppCompatActivity(),
         intent.putExtra(CandyCrop.CANDYCROP_RESULT_EXTRA,res)
         setResult(RESULT_OK,intent)
         finish()
+    }
+
+    override fun onCropError(uri: Uri?, error: Exception) {
+        finishWithError(error)
+    }
+
+    private fun finishWithError(error : Exception) {
+        val intent = Intent()
+        intent.putExtras(getIntent())
+        intent.putExtra(CandyCrop.CANDYCROP_ERROR_EXTRA,error)
+        setResult(Activity.RESULT_CANCELED,intent)
+        finish()
+    }
+
+    override fun onLoadUriImageComplete(result: Bitmap, uri: Uri) {
+        mTxtOk.visibility = when(mOptions.showButtonPositive) {
+            true -> View.VISIBLE
+            false -> View.GONE
+        }
+    }
+
+    override fun onLoadUriImageError(uri: Uri, error: Exception) {
+        finishWithError(error)
     }
 }

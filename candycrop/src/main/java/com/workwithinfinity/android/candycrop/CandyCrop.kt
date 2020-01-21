@@ -24,6 +24,8 @@ class CandyCrop {
         const val CANDYCROP_SOURCE_URI = "CANDYCROP_SOURCE_URI"
         /** const name for the result in the bundle */
         const val CANDYCROP_RESULT_EXTRA = "CANDYCROP_RESULT_EXTRA"
+        /** const name for the error in the bundle */
+        const val CANDYCROP_ERROR_EXTRA = "CANDYCROP_ERROR_EXTRA"
         /** id for the activity request */
         const val CANDYCROP_ACTIVITY_REQUEST = 2104
         /** id for the read permission request */

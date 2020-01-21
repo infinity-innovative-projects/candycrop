@@ -16,6 +16,9 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.workwithinfinity.android.R
 import java.io.File
+import java.io.InputStream
+import java.io.ObjectInput
+import java.io.ObjectInputStream
 
 class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, CandyCropView.OnLoadUriImageCompleteListener {
 
@@ -108,6 +111,11 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
             cropView.setImageUriAsync(result.croppedUri!!)
     }
 
+    override fun onCropError(uri: Uri?, error: Exception) {
+        Log.d("CandyCropTest","Failed to Crop Image for uri ${uri.toString()} with error ${error.message}")
+        Toast.makeText(this,"Something went Wrong",Toast.LENGTH_SHORT).show()
+    }
+
     /**
      * Implementation of the onLoadUriImageCompleteListener
      * @param result the loaded image as bitmap
@@ -119,6 +127,11 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
         activitybutton.isEnabled = true
         rotateRightButton.isEnabled = true
         rotateLeftButton.isEnabled = true
+    }
+
+    override fun onLoadUriImageError(uri: Uri, error: Exception) {
+        Log.d("CandyCropTest","Failed to Crop Image for uri ${uri.toString()} with error ${error.message}")
+        Toast.makeText(this,"Something went Wrong",Toast.LENGTH_SHORT).show()
     }
 
     /**
@@ -204,7 +217,14 @@ class MainActivity : AppCompatActivity(), CandyCropView.OnCropCompleteListener, 
                     }
                 }
             } else {
-                Log.d(this.javaClass.name,"Failed to crop picture")
+                val errorSerializable = data?.getSerializableExtra(CandyCrop.CANDYCROP_ERROR_EXTRA)
+                if(errorSerializable!=null) {
+                    val error = errorSerializable as Exception
+                    Toast.makeText(this,"Something went Wrong",Toast.LENGTH_SHORT).show()
+                    Log.d(this.javaClass.name,"Error while Cropping with exception ${error.message}")
+                } else {
+                    Log.d(this.javaClass.name,"Crop canceled")
+                }
             }
         }
     }
